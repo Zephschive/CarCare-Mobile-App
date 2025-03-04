@@ -1,0 +1,2 @@
+C:/Users/zepha/carcare/android/app/.cxx/Debug/4m57u271/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/zepha/carcare/android/app/.cxx/Debug/4m57u271/armeabi-v7a/CMakeFiles/rebuild_cache.dir
