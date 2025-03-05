@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 class CCcolours {
   static const Color whiteBackground = Color(0xFFF6F6F6);
+  static const Color whiteBackground2 = Color(0xFFFFFEFE);
   static const Color whiteTextColor = Color(0xFFEEEDED);
   static const Color blueBackground = Color(0xFF2F80ED);
   static const Color calendarBackground = Color(0xFFE3EFFF);
   static const Color buttonColor = Color(0xFF2D9EE0);
   static const Color chatBubble = Color(0xFF2D9EE0);
+  static const Color GreyBorder = Color(0xFFB3B2B2);
 
   // Linear gradient 1
   static const LinearGradient linearColor1 = LinearGradient(

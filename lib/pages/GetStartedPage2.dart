@@ -1,3 +1,4 @@
+import 'package:carcare/pages/GetStartedPage1.dart';
 import 'package:carcare/pages/GetStartedPage3.dart';
 import 'package:flutter/material.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
@@ -33,12 +34,12 @@ class GetStartedPage2 extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () {
-                        // Handle back action
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> GetStartedPage1()));
                       },
                     ),
                     GestureDetector(
                       onTap: () {
-                        // Handle skip action
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> GetStartedPage3()));
                       },
                       child: const Text(
                         "Skip »",
@@ -105,10 +106,11 @@ class GetStartedPage2 extends StatelessWidget {
           Positioned(
             bottom: 0,
             right: 0,
-            child: InkWell(
+            child: InkResponse(
               onTap: (){
                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>GetStartedPage3() ));
               },
+              radius: 30,
               hoverColor: Colors.lightBlue,
               child: ClipPath(
                 clipper: QuarterCircleClipper(),

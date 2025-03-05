@@ -1,4 +1,5 @@
 import 'package:carcare/pages/GetStartedPage2.dart';
+import 'package:carcare/pages/GetStartedPage3.dart';
 import 'package:flutter/material.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
 import 'package:google_fonts/google_fonts.dart'; 
@@ -28,17 +29,12 @@ class GetStartedPage1 extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () {
-                        // Handle back action
-                      },
-                    ),
+                    
                     GestureDetector(
                       onTap: () {
-                        // Handle skip action
+                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> GetStartedPage3()));
                       },
                       child: const Text(
                         "Skip »",
@@ -105,11 +101,11 @@ class GetStartedPage1 extends StatelessWidget {
           Positioned(
             bottom: 0,
             right: 0,
-            child: InkWell(
+            child: InkResponse(
               onTap: (){
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>GetStartedPage2() ));
               },
-              hoverColor: Colors.lightBlue,
+            
               child: ClipPath(
                 clipper: QuarterCircleClipper(),
                 child: Container(
@@ -134,18 +130,3 @@ class GetStartedPage1 extends StatelessWidget {
 }
 
 // Custom Clipper for Quarter Circle
-class QuarterCircleClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path = Path();
-    path.moveTo(size.width, 0);
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
-    path.arcToPoint(Offset(size.width, 0), radius: Radius.circular(size.width));
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
