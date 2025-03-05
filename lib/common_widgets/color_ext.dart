@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CCcolrs {
+class CCcolours {
   static const Color whiteBackground = Color(0xFFF6F6F6);
   static const Color whiteTextColor = Color(0xFFEEEDED);
   static const Color blueBackground = Color(0xFF2F80ED);
@@ -16,7 +16,7 @@ class CCcolrs {
       Color(0xFF2D9EE0), // Position 100%
     ],
     begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    end: Alignment.topRight,
   );
 
   // Linear gradient 2
@@ -27,6 +27,6 @@ class CCcolrs {
       Color(0xFF000000), // Position 100%
     ],
     begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    end: Alignment.topRight,
   );
 }

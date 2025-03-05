@@ -1,3 +1,4 @@
+import 'package:carcare/pages/GetStartedPage1.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:carcare/common_widgets/common_widgets.dart';
@@ -14,6 +15,7 @@ class _SplashpageState extends State<Splashpage> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 3), () {
+   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => GetStartedPage1()));
    
     });
   }
@@ -41,7 +43,7 @@ class _SplashpageState extends State<Splashpage> {
                   ),
                 ),
                 const SizedBox(height: 15),
-                const CircularProgressIndicator(color: CCcolrs.chatBubble,
+                const CircularProgressIndicator(color: CCcolours.chatBubble,
                     strokeWidth: 10,
                   strokeAlign: 1.5,
 
