@@ -1,5 +1,6 @@
 import 'package:carcare/blankscreen.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
+import 'package:carcare/pages/Homepage.dart';
 import 'package:carcare/pages/SplashPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         
       ),
-      home: const Splashpage()
+      home: Splashpage()
     );
   }
 }

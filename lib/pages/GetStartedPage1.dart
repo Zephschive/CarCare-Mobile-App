@@ -32,18 +32,26 @@ class GetStartedPage1 extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     
-                    GestureDetector(
-                      onTap: () {
-                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> GetStartedPage3()));
-                      },
-                      child: const Text(
-                        "Skip »",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                    TextButton(onPressed: 
+                  (){
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> GetStartedPage3()));
+                  }, child: Row(
+                    children: [
+                      Text("Skip", style: GoogleFonts.karla(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: CCcolours.whiteTextColor
+                      ),),
+                      Icon(Icons.keyboard_double_arrow_right,
+                      color: CCcolours.whiteTextColor,)
+                    ],
+                  ),
+                  style: ButtonStyle(
+                    padding:WidgetStatePropertyAll(EdgeInsets.all(10)),
+                    shape: WidgetStatePropertyAll(OvalBorder())
+                  ),
+                  
+                  
                     ),
                   ],
                 ),
