@@ -1,5 +1,8 @@
+import 'package:carcare/common_widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class SupportCenterPage extends StatefulWidget {
   @override
@@ -7,7 +10,11 @@ class SupportCenterPage extends StatefulWidget {
 }
 
 class _SupportCenterPageState extends State<SupportCenterPage> {
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); 
   List<bool> _expandedList = List.generate(5, (index) => false);
+
+    int selectedIndex = 5;
+
 
   final List<Map<String, String>> faqs = [
     {
@@ -38,18 +45,35 @@ class _SupportCenterPageState extends State<SupportCenterPage> {
     });
   }
 
+void _launchPhoneDialer(String phoneNumber) async {
+  final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+  try {
+    await launchUrl(phoneUri);
+  } catch (e) {
+    print("Could not launch dialer: $e");
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Support Center", style: GoogleFonts.karla(fontWeight: FontWeight.bold)),
+          leading: IconButton(icon:Icon(Icons.menu),
+          onPressed: (){
+            _scaffoldKey.currentState?.openDrawer();
+          },
+          ),
       ),
+
+      drawer: SideMenuDrawer(selectedIndex: selectedIndex),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Support Center", style: GoogleFonts.karla(fontSize: 22, fontWeight: FontWeight.bold)),
+            Text("Support Center", style: GoogleFonts.lexendDeca(fontSize: 22, fontWeight: FontWeight.normal)),
             const SizedBox(height: 20),
 
             // Call Us & Chat With Us Buttons
@@ -57,7 +81,7 @@ class _SupportCenterPageState extends State<SupportCenterPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildSupportCard("Call Us", "assets/img/Call_holder.png"),
-                _buildSupportCard("Chat With Us", "assets/img/Women_chattingonline.png"),
+                _buildSupportCard("Chat With Us", "assets/img/Woman_chattingonline.png"),
               ],
             ),
             const SizedBox(height: 20),
@@ -78,7 +102,7 @@ class _SupportCenterPageState extends State<SupportCenterPage> {
                     child: Column(
                       children: [
                         ListTile(
-                          title: Text(faqs[index]["question"]!, style: GoogleFonts.karla(fontSize: 16)),
+                          title: Text(faqs[index]["question"]!, style: GoogleFonts.lexendDeca(fontSize: 16 , fontWeight: FontWeight.normal)),
                           trailing: Icon(_expandedList[index] ? Icons.remove : Icons.add),
                           onTap: () => _toggleExpand(index),
                         ),
@@ -103,7 +127,11 @@ class _SupportCenterPageState extends State<SupportCenterPage> {
   Widget _buildSupportCard(String title, String imagePath) {
     return GestureDetector(
       onTap: () {
-        print("$title clicked");
+       if (title == "Call Us") {
+    _launchPhoneDialer("+233501234567"); // Replace with your actual support number
+  } else {
+    print("$title clicked");
+  }
       },
       child: Container(
         width: MediaQuery.of(context).size.width * 0.42,

@@ -40,6 +40,9 @@ dependencies:
   firebase_auth: ^5.5.1
   cloud_firestore: ^5.6.5
   dropdown_search: ^6.0.2
+  url_launcher: ^6.3.1
+  table_calendar: ^3.2.0
+  file_picker: ^10.0.0
 
 dev_dependencies:
   flutter_test:
