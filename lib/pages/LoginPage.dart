@@ -1,5 +1,6 @@
 import 'package:carcare/common_widgets/RectangularbuttonColor.dart';
 import 'package:carcare/pages/Homepage.dart';
+import 'package:carcare/pages/Navigator_Page.dart';
 import 'package:carcare/pages/SignupPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       // Navigate to home page (replace with your actual home page)
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainNavigatorPage()));
 
     } on FirebaseAuthException catch (e) {
       // Show error message

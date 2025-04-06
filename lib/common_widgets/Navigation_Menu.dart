@@ -1,16 +1,14 @@
+import 'package:carcare/pages/SupportPage.dart';
 import 'package:flutter/material.dart';
+import 'package:carcare/pages/Homepage.dart';
+import 'package:carcare/pages/Maintenance_tips_page.dart';
 
-class SideMenuDrawer extends StatefulWidget {
+
+class SideMenuDrawer extends StatelessWidget {
   final int selectedIndex;
-  final Function(int) onItemSelected;
 
-  const SideMenuDrawer({super.key, required this.selectedIndex, required this.onItemSelected});
+  const SideMenuDrawer({super.key, required this.selectedIndex});
 
-  @override
-  _SideMenuDrawerState createState() => _SideMenuDrawerState();
-}
-
-class _SideMenuDrawerState extends State<SideMenuDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -27,11 +25,11 @@ class _SideMenuDrawerState extends State<SideMenuDrawer> {
             ),
             accountName: const Text("Alex Hkeuiao"),
             accountEmail: const Text("License Plate: 38192791972"),
-            currentAccountPicture: Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: const CircleAvatar(
-                radius: 40, // Make it slightly larger
-                backgroundImage: AssetImage("assets/profile.jpg"), // Replace with actual profile image
+            currentAccountPicture: const Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: CircleAvatar(
+                radius: 40,
+                backgroundImage: AssetImage("assets/img/Avatar.png"),
               ),
             ),
           ),
@@ -40,13 +38,13 @@ class _SideMenuDrawerState extends State<SideMenuDrawer> {
           Expanded(
             child: ListView(
               children: [
-                _buildDrawerItem(Icons.home, "Dashboard", 0),
-                _buildDrawerItem(Icons.car_repair, "Towing Service", 1),
-                _buildDrawerItem(Icons.build, "Maintenance Tips", 2),
-                _buildDrawerItem(Icons.notifications, "Service Reminders", 3),
-                _buildDrawerItem(Icons.description, "Documents", 4),
-                _buildDrawerItem(Icons.support, "Support", 5),
-                _buildDrawerItem(Icons.settings, "Settings", 6),
+                _buildDrawerItem(context, Icons.home, "Dashboard", 0, HomePage()),
+                _buildDrawerItem(context, Icons.build, "Maintenance Tips", 1, MaintenanceTipsPage()),
+                _buildDrawerItem(context, Icons.car_repair, "Towing Service", 2, MaintenanceTipsPage()),
+                _buildDrawerItem(context, Icons.notifications, "Service Reminders", 3, HomePage()),
+                _buildDrawerItem(context, Icons.description, "Documents", 4, HomePage()),
+                _buildDrawerItem(context, Icons.support, "Support", 5, SupportCenterPage()),
+                _buildDrawerItem(context, Icons.settings, "Settings", 6, MaintenanceTipsPage()),
               ],
             ),
           ),
@@ -55,9 +53,9 @@ class _SideMenuDrawerState extends State<SideMenuDrawer> {
     );
   }
 
-  // Drawer Item Widget with Active Highlighting
-  Widget _buildDrawerItem(IconData icon, String title, int index) {
-    bool isSelected = widget.selectedIndex == index;
+  // Drawer Item Widget with Navigation
+  Widget _buildDrawerItem(BuildContext context, IconData icon, String title, int index, Widget page) {
+    bool isSelected = selectedIndex == index;
 
     return ListTile(
       leading: Icon(icon, color: isSelected ? Colors.blue : Colors.grey),
@@ -69,10 +67,13 @@ class _SideMenuDrawerState extends State<SideMenuDrawer> {
           color: isSelected ? Colors.blue : Colors.black,
         ),
       ),
-      tileColor: isSelected ? Colors.blue.withOpacity(0.2) : Colors.transparent, // Highlight active
+      tileColor: isSelected ? Colors.blue.withOpacity(0.2) : Colors.transparent,
       onTap: () {
-        widget.onItemSelected(index);
-        Navigator.pop(context); // Close the drawer after selection
+        Navigator.pop(context); // Close the drawer
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => page),
+        );
       },
     );
   }

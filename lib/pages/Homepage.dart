@@ -1,7 +1,10 @@
 import 'package:carcare/common_widgets/Navigation_Menu.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,14 +16,70 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
 
+
+
+
   void onItemSelected(int index) {
+    print("/// Navigating to index: $index");
     setState(() {
       selectedIndex = index;
     });
+     print("// Navigating to index: $selectedIndex");
   }
+  
+ final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  User? _currentUser;
+
+  String? _fullName;
+
+@override
+void initState() {
+  super.initState();
+  _currentUser = _auth.currentUser;
+  _fetchFullName();
+}
+  Future<void> _fetchFullName() async {
+    if (_currentUser == null) return;
+    try {
+      final email = _currentUser!.email;
+      if (email == null) return;
+
+      QuerySnapshot querySnapshot = await _firestore
+          .collection("users")
+          .where("email", isEqualTo: email)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot userDoc = querySnapshot.docs.first;
+        setState(() {
+          _fullName = userDoc.get("fullname") as String?;
+        });
+       
+      }
+    } catch (e) {
+      debugPrint("Error fetching full name: $e");
+    }
+  }
+
+ // Import the modal widget
+
+void showAddCarModal(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) =>  AddCarModal(), // Use the widget
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
+ 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -37,7 +96,6 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: SideMenuDrawer(
         selectedIndex: selectedIndex,
-        onItemSelected: onItemSelected,
       ),
 
       body: SingleChildScrollView( // Makes the entire page scrollable
@@ -52,7 +110,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   const SizedBox(height: 10),
                   Text(
-                    "Welcome Alex!",
+                     "Welcome ${_fullName ?? "(Loading)"}",
                     style: GoogleFonts.karla(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -178,7 +236,7 @@ Container(
       // Floating Action Button
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Action for adding a new reminder
+          showAddCarModal(context);
         },
         backgroundColor: Colors.blue,
         child: const Icon(Icons.add, color: Colors.white),
