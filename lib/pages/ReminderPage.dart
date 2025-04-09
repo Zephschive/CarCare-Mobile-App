@@ -17,6 +17,13 @@ class _ReminderPageState extends State<ReminderPage> {
   int selectedIndex = 3;
   Color _selectedColor = Colors.green.shade100;
 
+  DateTime _parseTime(String timeStr) {
+  final now = DateTime.now();
+  final format = DateFormat.jm(); // e.g., 1:00 PM
+  return format.parse(timeStr);
+}
+
+
   final Map<String, List<Map<String, dynamic>>> _reminders = {
     "2025-04-07": [
       {
@@ -26,7 +33,7 @@ class _ReminderPageState extends State<ReminderPage> {
         "color": Colors.blue,
       },
       {
-        "time": "10:00 AM",
+        "time": "1:00 PM",
         "title": "Insurance Renewal Reminder",
         "desc": "Please don't forget to renew it",
         "color": Colors.red.shade100,
@@ -174,8 +181,8 @@ class _ReminderPageState extends State<ReminderPage> {
               child: Text(entry.key, style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Container(
-              width: 6.0 , // Width depends on number of entries
-              height: 40.0 * entry.value.length,
+              width: 6.0 , 
+              height: 65.0 * entry.value.length,
               color: entry.value.first['color'],
               margin: const EdgeInsets.symmetric(horizontal: 8),
             ),

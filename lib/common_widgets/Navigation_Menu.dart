@@ -1,6 +1,8 @@
 import 'package:carcare/pages/Documentspage.dart';
 import 'package:carcare/pages/ReminderPage.dart';
+import 'package:carcare/pages/Settingspage.dart';
 import 'package:carcare/pages/SupportPage.dart';
+import 'package:carcare/pages/TowingRequestpage.dart';
 import 'package:flutter/material.dart';
 import 'package:carcare/pages/Homepage.dart';
 import 'package:carcare/pages/Maintenance_tips_page.dart';
@@ -42,11 +44,11 @@ class SideMenuDrawer extends StatelessWidget {
               children: [
                 _buildDrawerItem(context, Icons.home, "Dashboard", 0, HomePage()),
                 _buildDrawerItem(context, Icons.build, "Maintenance Tips", 1, MaintenanceTipsPage()),
-                _buildDrawerItem(context, Icons.car_repair, "Towing Service", 2, MaintenanceTipsPage()),
+                _buildDrawerItem(context, Icons.car_repair, "Towing Service", 2, TowingRequestPage()),
                 _buildDrawerItem(context, Icons.notifications, "Service Reminders", 3, ReminderPage()),
                 _buildDrawerItem(context, Icons.description, "Documents", 4, Documentspage()),
                 _buildDrawerItem(context, Icons.support, "Support", 5, SupportCenterPage()),
-                _buildDrawerItem(context, Icons.settings, "Settings", 6, MaintenanceTipsPage()),
+                _buildDrawerItem(context, Icons.settings, "Settings", 6, ProfileSettingsPage()),
               ],
             ),
           ),
