@@ -20,7 +20,11 @@ class _AddCarModalState extends State<AddCarModal> {
   String? selectedBrand;
   String? selectedType;
   String? selectedModel;
+  String? _UserUID;
   bool isCustomModel = false;
+
+   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final List<String> carBrands = ["Toyota", "Honda", "BMW", "Mercedes"];
   final List<String> carTypes = ["SUV", "Sedan", "Truck", "Coupe"];
@@ -30,40 +34,99 @@ class _AddCarModalState extends State<AddCarModal> {
     "BMW": ["X5", "X3", "3 Series"],
     "Mercedes": ["C-Class", "E-Class", "GLA"],
   };
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = _auth.currentUser;
+    _fetchUserUid();
+  }
 
-  
+  User? _currentUser ;
 
-  void _submitCar() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
 
-    String finalModel =
-        isCustomModel ? customModelController.text.trim() : selectedModel ?? "";
+    Future<void> _fetchUserUid() async {
 
-    if (licensePlateController.text.isEmpty ||
-        selectedBrand == null ||
-        selectedType == null ||
-        finalModel.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill all fields")),
-      );
-      return;
+
+    if (_currentUser == null) return;
+    try {
+      final email = _currentUser!.email;
+      if (email == null) return;
+
+      QuerySnapshot querySnapshot = await _firestore
+          .collection("users")
+          .where("email", isEqualTo: email)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot userDoc = querySnapshot.docs.first;
+        setState(() {
+          _UserUID = userDoc.get("uid") as String?;
+        });
+       
+      }
+    } catch (e) {
+      debugPrint("Error fetching full name: $e");
     }
+  }
 
-    await FirebaseFirestore.instance.collection("users").doc(user.email).update({
+
+void _submitCar() async {
+  FocusScope.of(context).unfocus(); // close keyboard
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => const Center(child: CircularProgressIndicator()),
+  );
+
+  String finalModel =
+      isCustomModel ? customModelController.text.trim() : selectedModel ?? "";
+
+  if (licensePlateController.text.isEmpty ||
+      selectedBrand == null ||
+      selectedType == null ||
+      finalModel.isEmpty) {
+    Navigator.pop(context); // Close loading
+    ScaffoldMessenger.of(Navigator.of(context).overlay!.context).showSnackBar(
+      const SnackBar(content: Text("Please fill all fields")),
+    );
+    return;
+  }
+
+  await _fetchUserUid();
+
+  print(_UserUID);
+
+  try {
+    await _firestore.collection("users").doc(_UserUID).set({
       "cars": FieldValue.arrayUnion([
         {
           "license_plate": licensePlateController.text.trim(),
           "brand": selectedBrand,
           "type": selectedType,
           "model": finalModel,
-          "timestamp": FieldValue.serverTimestamp(),
+          "timestamp": "hbk "
         }
       ])
-    });
+    }, SetOptions(merge: true));
 
-    Navigator.pop(context);
+    Navigator.pop(context); // close loading
+    Navigator.pop(context); // close modal
+
+    ScaffoldMessenger.of(Navigator.of(context).overlay!.context).showSnackBar(
+      SnackBar(
+        content: const Text("Car added successfully", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.green,
+      ),
+    );
+  } catch (e) {
+    Navigator.pop(context); // close loading
+    ScaffoldMessenger.of(Navigator.of(context).overlay!.context).showSnackBar(
+      SnackBar(content: Text("Something went wrong: $e")),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +252,9 @@ class _AddCarModalState extends State<AddCarModal> {
                   backgroundColor: Colors.blue,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
-                onPressed: _submitCar,
+                onPressed: (){
+                  _submitCar();
+                },
                 child:
                     const Text("Confirm", style: TextStyle(color: Colors.white)),
               ),

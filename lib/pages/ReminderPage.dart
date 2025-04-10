@@ -93,6 +93,9 @@ class _ReminderPageState extends State<ReminderPage> {
               Text("Today’s Reminder", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
               TableCalendar(
+              availableCalendarFormats: const {
+                   CalendarFormat.month: 'Month',
+              },
                 focusedDay: _focusedDay,
                 firstDay: DateTime.utc(2020, 1, 1),
                 lastDay: DateTime.utc(2030, 12, 31),

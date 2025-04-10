@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
 
-
 class TowingRequestPage extends StatefulWidget {
   @override
   _TowingRequestPageState createState() => _TowingRequestPageState();
@@ -21,28 +20,25 @@ class _TowingRequestPageState extends State<TowingRequestPage> {
       drawer: SideMenuDrawer(selectedIndex: selectedIndex),
       body: Stack(
         children: [
+          /// 📍 Fullscreen map placeholder
+          Positioned.fill(
+            child: Image.asset(
+              "assets/img/MapAccra.png",
+              fit: BoxFit.cover,
+            ),
+          ),
 
-          Align(
-            alignment: AlignmentDirectional.topStart,
+          /// 📍 Top menu icon (hamburger)
+          Positioned(
+            top: 40, // adjust as needed for spacing below status bar
+            left: 16,
             child: IconButton(
-            icon: Icon(Icons.menu, color: Colors.black),
-            onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-                    ),
+              icon: Icon(Icons.menu, color: Colors.white),
+              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+            ),
           ),
 
-          Image.asset("assets/img/MapAccra.png",
-          fit: BoxFit.fill,
-          scale: 0.2,
-          ),
-          // Google Map (dummy widget for now)
-          // GoogleMap(
-          //   initialCameraPosition: CameraPosition(
-          //     target: LatLng(5.614818, -0.205874), // Accra coordinates as example
-          //     zoom: 10,
-          //   ),
-          // ),
-
-          // Bottom Sheet
+          /// 📍 Bottom Sheet
           if (showBottomSheet)
             Align(
               alignment: Alignment.bottomCenter,
@@ -83,9 +79,7 @@ class _TowingRequestPageState extends State<TowingRequestPage> {
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        // Hide bottom sheet or change it
                         setState(() => showBottomSheet = false);
-                        // Or trigger new logic here
                       },
                       child: Text("Confirm"),
                       style: ElevatedButton.styleFrom(

@@ -51,21 +51,22 @@ Future<void> _pickFileFor(String docType) async {
     return Scaffold(
       key: _scaffoldKey,
       drawer: SideMenuDrawer(selectedIndex: selectedIndex),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(icon: Icon(Icons.menu, color: Colors.black), onPressed: () {
-           _scaffoldKey.currentState?.openDrawer();
-        }),
-      ),
+      
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Documents", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-
-            SizedBox(height: 20),
+             SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                IconButton(icon: Icon(Icons.menu, color: Colors.black), onPressed: () {
+           _scaffoldKey.currentState?.openDrawer();
+        }),
+                Text("Documents", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              ],
+            ),
 
             // Grid of documents
             Expanded(
