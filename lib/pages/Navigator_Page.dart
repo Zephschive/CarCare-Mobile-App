@@ -15,7 +15,7 @@ class _MainNavigatorPageState extends State<MainNavigatorPage> {
 
   // List of available screens
   final List<Widget> pages = [
-            HomePage(),
+            HomePage(Theme: false,),
             MaintenanceTipsPage()
   ];
 

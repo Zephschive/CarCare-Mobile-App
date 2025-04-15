@@ -7,7 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart'; 
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+   HomePage({super.key , required this.Theme});
+   bool Theme;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -35,7 +36,59 @@ final PageController _pageController = PageController();
     _currentUser = _auth.currentUser;
     _fetchFullName();
     _fetchCars();
+    _loadUpcomingReminders();
   }
+
+void _showReminderDetailsDialog(Map<String, dynamic> reminder) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text(reminder['title'] ?? 'Reminder'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("📅 Date: ${reminder['date']}"),
+            Text("⏰ Time: ${reminder['time']}"),
+            const SizedBox(height: 10),
+            Text("📝 Description:"),
+            Text(reminder['desc'] ?? '', style: const TextStyle(fontWeight: FontWeight.w400)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Close"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+
+
+  List<Map<String, dynamic>> _upcomingReminders = [];
+
+Future<void> _loadUpcomingReminders() async {
+  final user = _auth.currentUser;
+  if (user == null) return;
+
+  final doc = await _firestore.collection("users").doc(user.uid).get();
+  final reminders = List<Map<String, dynamic>>.from(doc.data()?['reminders'] ?? []);
+
+  final today = DateTime.now();
+
+  _upcomingReminders = reminders.where((reminder) {
+    final date = DateTime.parse(reminder['date']);
+    return date.isAfter(today);
+  }).toList();
+
+  setState(() {});
+}
+
 
   Future<void> _fetchFullName() async {
     if (_currentUser == null) return;
@@ -228,42 +281,49 @@ final PageController _pageController = PageController();
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
-                  SizedBox(
-                    height: 80,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: List.generate(4, (index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Container(
-                            width: 100,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white,
-                              border: Border.all(color: const Color(0xFFB3B2B2)),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 3,
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Icon(Icons.notifications, color: Colors.red),
-                                ),
-                                SizedBox(height: 5),
-                                Text("Tire Change"),
-                              ],
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
+                 SizedBox(
+  height: 80,
+  child: _upcomingReminders.isEmpty
+      ? Center(child: Text("No upcoming reminders at the moment."))
+      : ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: _upcomingReminders.length,
+          itemBuilder: (context, index) {
+            final reminder = _upcomingReminders[index];
+            return Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: GestureDetector(
+                onTap: (){
+                  _showReminderDetailsDialog(_upcomingReminders[index]);
+                },
+                child: Container(
+                  width: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    border: Border.all(color: const Color(0xFFB3B2B2)),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 3,
+                      ),
+                    ],
                   ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.notifications, color: Colors.red),
+                      const SizedBox(height: 5),
+                      Text(reminder['title'] ?? '', textAlign: TextAlign.center),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+)
+,
                 ],
               ),
             ),

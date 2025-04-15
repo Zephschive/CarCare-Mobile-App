@@ -6,6 +6,7 @@ import 'package:carcare/pages/TowingRequestpage.dart';
 import 'package:flutter/material.dart';
 import 'package:carcare/pages/Homepage.dart';
 import 'package:carcare/pages/Maintenance_tips_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 class SideMenuDrawer extends StatelessWidget {
@@ -13,36 +14,55 @@ class SideMenuDrawer extends StatelessWidget {
 
   const SideMenuDrawer({super.key, required this.selectedIndex});
 
+  
   @override
   Widget build(BuildContext context) {
+    bool theme= false;
     return Drawer(
       child: Column(
         children: [
           // Profile Section
-          UserAccountsDrawerHeader(
-            decoration: const BoxDecoration(
+          Container(
+            padding: EdgeInsets.only(top: 40),
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.blue, Colors.blueAccent],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+                      colors: [ theme ?Colors.blue : Colors.blue , theme ?Colors.blueAccent : Color(0x0000000)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
             ),
-            accountName: const Text("Alex Hkeuiao"),
-            accountEmail: const Text("License Plate: 38192791972"),
-            currentAccountPicture: const Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: CircleAvatar(
-                radius: 40,
-                backgroundImage: AssetImage("assets/img/Avatar.png"),
-              ),
+            child: Column(
+              children: [
+                  CircleAvatar(
+                      radius: 40,
+                      backgroundImage: AssetImage("assets/img/Avatar.png"),
+                    ),
+                    SizedBox(height: 20,),
+                    Text("ALEX Hdndfjaddan", style: GoogleFonts.abel(
+                      color: Colors.white,
+                    ),),
+                  
+                     Text("ALEX Hdndfjaddan", style: GoogleFonts.abel(
+                      color: Colors.white,
+                    ),),
+              
+
+                 Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(onPressed: (){
+              
+              }, icon: Icon(theme ? Icons.sunny :Icons.nightlight, size: 30, color: Colors.white,))
+            ],)
+              ],
             ),
           ),
-
+         
           // Drawer Items
           Expanded(
             child: ListView(
               children: [
-                _buildDrawerItem(context, Icons.home, "Dashboard", 0, HomePage()),
+                _buildDrawerItem(context, Icons.home, "Dashboard", 0, HomePage(Theme: theme,)),
                 _buildDrawerItem(context, Icons.build, "Maintenance Tips", 1, MaintenanceTipsPage()),
                 _buildDrawerItem(context, Icons.car_repair, "Towing Service", 2, TowingRequestPage()),
                 _buildDrawerItem(context, Icons.notifications, "Service Reminders", 3, ReminderPage()),

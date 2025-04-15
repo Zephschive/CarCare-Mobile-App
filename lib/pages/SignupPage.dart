@@ -1,5 +1,6 @@
 import 'package:carcare/common_widgets/RectangularbuttonColor.dart';
 import 'package:carcare/pages/LoginPage.dart';
+import 'package:carcare/pages/Navigator_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -85,7 +86,7 @@ class _SignuppageState extends State<Signuppage> {
         // Navigate to the HomePage (ensure HomePage widget is defined)
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => MainNavigatorPage()),
         );
       }
     } on FirebaseAuthException catch (e) {

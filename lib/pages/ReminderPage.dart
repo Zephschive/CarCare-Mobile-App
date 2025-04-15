@@ -29,15 +29,19 @@ class _ReminderPageState extends State<ReminderPage> {
 
 
 Future<void> _deleteReminder(Map<String, dynamic> reminder) async {
-    final user = _auth.currentUser;
-    if (user == null) return;
+  final user = _auth.currentUser;
+  if (user == null) return;
 
-    final key = (_selectedDay ?? _focusedDay).toIso8601String().substring(0, 10);
-    final docRef = _firestore.collection("users").doc(user.uid).collection("reminders").doc(key);
+  final userDoc = _firestore.collection("users").doc(user.uid);
 
-    await docRef.update({"items": FieldValue.arrayRemove([reminder])});
-    Navigator.of(context).pop();
-  }
+  await userDoc.update({
+    "reminders": FieldValue.arrayRemove([reminder])
+  });
+
+  Navigator.of(context).pop();
+  
+}
+
 
   @override
   void dispose() {
@@ -230,22 +234,22 @@ final items = (snapshot.data!["reminders"] as List?)
             ),
             Expanded(
               child: Column(
-                children: entry.value.map((reminder) {
+                children: entry.value.map((reminderss) {
                   return GestureDetector(
-                    onTap: () => _showReminderDetail(reminder),
+                    onTap: () => _showReminderDetail(reminderss),
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Color(reminder['color']),
+                        color: Color(reminderss['color']),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(reminder['title'], style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(reminderss['title'], style: TextStyle(fontWeight: FontWeight.bold)),
                           SizedBox(height: 4),
-                          Text(reminder['desc'], style: TextStyle(fontSize: 12, color: Colors.black54)),
+                          Text(reminderss['desc'], style: TextStyle(fontSize: 12, color: Colors.black54)),
                         ],
                       ),
                     ),
@@ -365,9 +369,10 @@ final items = (snapshot.data!["reminders"] as List?)
     _titleController.text = oldReminder['title'];
     _descController.text = oldReminder['desc'];
     _selectedTime = TimeOfDay(
-      hour: int.parse(oldReminder['time'].split(":"[0])),
-      minute: int.parse(oldReminder['time'].split(":"[1].split(" ")[0]))
-    );
+    hour: int.parse(oldReminder['time'].split(":")[0]),
+    minute: int.parse(oldReminder['time'].split(":")[1].split(" ")[0])
+);
+
     Color selectedColor = Color(oldReminder['color']);
 
     showDialog(
@@ -377,6 +382,7 @@ final items = (snapshot.data!["reminders"] as List?)
           return AlertDialog(
             title: Text("Edit Reminder"),
             content: SingleChildScrollView(
+
               child: Column(
                 children: [
                   TextField(controller: _titleController, decoration: InputDecoration(labelText: "Title")),
@@ -411,23 +417,31 @@ final items = (snapshot.data!["reminders"] as List?)
             actions: [
               TextButton(
                 onPressed: () async {
-                  final updatedReminder = {
-                    "title": _titleController.text,
-                    "desc": _descController.text,
-                    "time": _selectedTime.format(context),
-                    "color": selectedColor.hashCode,
-                  };
+                 final updatedReminder = {
+                "title": _titleController.text,
+                "desc": _descController.text,
+                "time": _selectedTime.format(context),
+                "color": selectedColor.hashCode,
+                "date": (_selectedDay ?? _focusedDay).toIso8601String().substring(0, 10),
+              };
 
-                  final user = _auth.currentUser;
-                  if (user != null) {
-                    final key = (_selectedDay ?? _focusedDay).toIso8601String().substring(0, 10);
-                    final docRef = _firestore.collection("users").doc(user.uid).collection("reminders").doc(key);
+              final user = _auth.currentUser;
+              if (user != null) {
+                final userDoc = _firestore.collection("users").doc(user.uid);
 
-                    await docRef.update({"items": FieldValue.arrayRemove([oldReminder])});
-                    await docRef.update({"items": FieldValue.arrayUnion([updatedReminder])});
+                await userDoc.update({
+                  "reminders": FieldValue.arrayRemove([oldReminder])
+                });
+
+                await userDoc.update({
+                  "reminders": FieldValue.arrayUnion([updatedReminder])
+                });              
                   }
 
-                  Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+
+
                 },
                 child: Text("Save"),
               )
