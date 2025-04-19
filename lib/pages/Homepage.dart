@@ -1,14 +1,15 @@
 import 'package:carcare/common_widgets/Navigation_Menu.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
+import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart'; 
 
 class HomePage extends StatefulWidget {
-   HomePage({super.key , required this.Theme});
-   bool Theme;
+   HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -23,7 +24,8 @@ class _HomePageState extends State<HomePage> {
 // Add this controller in your _HomePageState
 final PageController _pageController = PageController();
 
-
+  
+  
   User? _currentUser;
   String? _fullName;
 
@@ -170,10 +172,11 @@ Future<void> _loadUpcomingReminders() async {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Provider.of<ThemeProvider>(context).isDarkMode;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: (isDark ? Colors.grey[900] : Colors.white),
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
@@ -189,7 +192,7 @@ Future<void> _loadUpcomingReminders() async {
             // Header Section
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              color: Colors.blue,
+              color: isDark? Colors.blue : Colors.black87,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -214,8 +217,8 @@ Future<void> _loadUpcomingReminders() async {
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
-  height: 230,
-  child: Column(
+      height: 230,
+      child: Column(
     children: [
       Expanded(
         child: PageView.builder(
@@ -247,14 +250,14 @@ Future<void> _loadUpcomingReminders() async {
           ),
         ),
     ],
-  ),
-),
-
+      ),
+    ),
+    
                   const SizedBox(height: 20),
                 ],
               ),
             ),
-
+    
             // Upcoming Reminders Section
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -263,7 +266,7 @@ Future<void> _loadUpcomingReminders() async {
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(30),
                   topRight: Radius.circular(30),
-
+    
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -282,8 +285,8 @@ Future<void> _loadUpcomingReminders() async {
                   ),
                   const SizedBox(height: 10),
                  SizedBox(
-  height: 80,
-  child: _upcomingReminders.isEmpty
+      height: 80,
+      child: _upcomingReminders.isEmpty
       ? Center(child: Text("No upcoming reminders at the moment."))
       : ListView.builder(
           scrollDirection: Axis.horizontal,
@@ -322,12 +325,12 @@ Future<void> _loadUpcomingReminders() async {
             );
           },
         ),
-)
-,
+    )
+    ,
                 ],
               ),
             ),
-
+    
             // Daily Tips Section
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

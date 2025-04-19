@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:carcare/pages/Homepage.dart';
 import 'package:carcare/pages/Maintenance_tips_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:carcare/theme_provider/themeprovider.dart';
+import 'package:provider/provider.dart';
 
 
 class SideMenuDrawer extends StatelessWidget {
@@ -14,10 +16,13 @@ class SideMenuDrawer extends StatelessWidget {
 
   const SideMenuDrawer({super.key, required this.selectedIndex});
 
+
   
   @override
   Widget build(BuildContext context) {
-    bool theme= false;
+    
+  bool isDark = Provider.of<ThemeProvider>(context).isDarkMode;
+ 
     return Drawer(
       child: Column(
         children: [
@@ -26,7 +31,7 @@ class SideMenuDrawer extends StatelessWidget {
             padding: EdgeInsets.only(top: 40),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                      colors: [ theme ?Colors.blue : Colors.blue , theme ?Colors.blueAccent : Color(0x0000000)],
+                      colors: [  Colors.blue , Colors.blueAccent ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     )
@@ -51,8 +56,9 @@ class SideMenuDrawer extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IconButton(onPressed: (){
-              
-              }, icon: Icon(theme ? Icons.sunny :Icons.nightlight, size: 30, color: Colors.white,))
+                Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+
+              }, icon: Icon(isDark ? Icons.sunny : Icons.nightlight))
             ],)
               ],
             ),
@@ -62,7 +68,7 @@ class SideMenuDrawer extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
-                _buildDrawerItem(context, Icons.home, "Dashboard", 0, HomePage(Theme: theme,)),
+                _buildDrawerItem(context, Icons.home, "Dashboard", 0, HomePage()),
                 _buildDrawerItem(context, Icons.build, "Maintenance Tips", 1, MaintenanceTipsPage()),
                 _buildDrawerItem(context, Icons.car_repair, "Towing Service", 2, TowingRequestPage()),
                 _buildDrawerItem(context, Icons.notifications, "Service Reminders", 3, ReminderPage()),
