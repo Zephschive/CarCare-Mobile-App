@@ -176,7 +176,7 @@ Future<void> _loadUpcomingReminders() async {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: (isDark ? Colors.grey[900] : Colors.white),
+        backgroundColor: (isDark ? Colors.blue : Colors.black87),
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
@@ -261,16 +261,12 @@ Future<void> _loadUpcomingReminders() async {
             // Upcoming Reminders Section
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-    
-                ),
+              decoration:  BoxDecoration(
+                color: (isDark ? Colors.white : Colors.black87),
+                
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black12,
+                    color: (isDark ? Colors.black12 : Colors.white24),
                     blurRadius: 5,
                     offset: Offset(0, -3),
                   ),
@@ -279,15 +275,22 @@ Future<void> _loadUpcomingReminders() async {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Upcoming Reminders",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
+                    color: (isDark ? Colors.black : Colors.white)
+                    ),
                   ),
                   const SizedBox(height: 10),
                  SizedBox(
       height: 80,
       child: _upcomingReminders.isEmpty
-      ? Center(child: Text("No upcoming reminders at the moment."))
+      ? Center(child: Text("No upcoming reminders at the moment.", style: 
+          TextStyle(
+            color: (isDark ? Colors.black : Colors.white),
+          )
+      
+      ))
       : ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: _upcomingReminders.length,
@@ -303,7 +306,7 @@ Future<void> _loadUpcomingReminders() async {
                   width: 100,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
+                    color: (isDark ? Colors.white : Colors.black87),
                     border: Border.all(color: const Color(0xFFB3B2B2)),
                     boxShadow: const [
                       BoxShadow(
@@ -317,7 +320,9 @@ Future<void> _loadUpcomingReminders() async {
                     children: [
                       const Icon(Icons.notifications, color: Colors.red),
                       const SizedBox(height: 5),
-                      Text(reminder['title'] ?? '', textAlign: TextAlign.center),
+                      Text(reminder['title'] ?? '', textAlign: TextAlign.center, style: TextStyle(
+                        color: (isDark ? Colors.black : Colors.white),
+                      ),),
                     ],
                   ),
                 ),
@@ -333,13 +338,18 @@ Future<void> _loadUpcomingReminders() async {
     
             // Daily Tips Section
             Container(
+              decoration: BoxDecoration(
+                color:  (isDark ? Colors.white : Colors.black87)
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                   Text(
                     "Daily Tips",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
+                    color: (isDark ? Colors.black  : Colors.white),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
@@ -347,11 +357,11 @@ Future<void> _loadUpcomingReminders() async {
                     child: ListView(
                       physics: const BouncingScrollPhysics(),
                       children: [
-                        TipCard("Insurance Renewal", "Your insurance will be...dvavcadcadcaccqa"),
-                        TipCard("Insurance Renewal Reminder", "Please don't forget to r..."),
-                        TipCard("Urgent Insurance Renewal", "Consider updating you..."),
-                        TipCard("Renewal Notification", "Protect yourself and y..."),
-                        TipCard("Insurance Renewal Alert", "Stay secure and renew..."),
+                        TipCard("Insurance Renewal", "Your insurance will be...dvavcadcadcaccqa", isDark),
+                        TipCard("Insurance Renewal Reminder", "Please don't forget to r...",isDark),
+                        TipCard("Urgent Insurance Renewal", "Consider updating you...",isDark),
+                        TipCard("Renewal Notification", "Protect yourself and y...",isDark),
+                        TipCard("Insurance Renewal Alert", "Stay secure and renew...",isDark),
                       ],
                     ),
                   ),

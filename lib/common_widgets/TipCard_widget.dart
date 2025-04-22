@@ -1,16 +1,18 @@
+import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:flutter/material.dart';
 
-
+import 'package:provider/provider.dart';
   
   
   
-  Widget TipCard(String title, String subtitle) {
+  Widget TipCard(String title, String subtitle, bool isDark) {
+    ;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? Colors.white: Colors.black87,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: const Color(0xFFB3B2B2)),
           boxShadow: [
@@ -25,12 +27,12 @@ import 'package:flutter/material.dart';
           children: [
             Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style:  TextStyle(fontWeight: FontWeight.bold , color: isDark ? Colors.white : Colors.black),
             ),
             const SizedBox(height: 5),
             Text(
               subtitle,
-              style: const TextStyle(color: Colors.grey),
+              style: TextStyle(fontWeight: FontWeight.bold , color: isDark ? Colors.white60 : Colors.black),
             ),
           ],
         ),
