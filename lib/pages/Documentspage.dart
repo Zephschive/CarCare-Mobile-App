@@ -1,6 +1,8 @@
+import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
+import 'package:provider/provider.dart';
 
 class Documentspage extends StatefulWidget {
   const Documentspage({super.key});
@@ -48,7 +50,9 @@ Future<void> _pickFileFor(String docType) async {
 
 
   Widget build(BuildContext context) {
+     bool isDark = Provider.of<ThemeProvider>(context).isDarkMode;
     return Scaffold(
+      backgroundColor: isDark ? Colors.white: Colors.black87,
       key: _scaffoldKey,
       drawer: SideMenuDrawer(selectedIndex: selectedIndex),
       
@@ -61,10 +65,12 @@ Future<void> _pickFileFor(String docType) async {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                IconButton(icon: Icon(Icons.menu, color: Colors.black), onPressed: () {
+                IconButton(icon: Icon(Icons.menu, color: isDark ? Colors.black : Colors.white), onPressed: () {
            _scaffoldKey.currentState?.openDrawer();
         }),
-                Text("Documents", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                Text("Documents", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,
+                color: isDark ? Colors.black : Colors.white
+                )),
               ],
             ),
 
@@ -76,10 +82,10 @@ Future<void> _pickFileFor(String docType) async {
                 mainAxisSpacing: 12,
                 childAspectRatio: 1.1,
                 children: [
-                  _buildDocumentCard("Driver’s License", "assets/img/driver's.png", "Up to date", Colors.green),
-                  _buildDocumentCard("Insurance", "assets/img/Insurance.png", "Up to date", Colors.green),
-                  _buildDocumentCard("RoadWorthy", "assets/img/RoadWorthy.png", "Renewal in 2 days", Colors.orange),
-                  _buildDocumentCard("ECOWAS ID Card", "assets/img/GhanaCard.png", "Expired", Colors.red),
+                  _buildDocumentCard("Driver’s License", "assets/img/driver's.png", "Up to date", Colors.green, isDark),
+                  _buildDocumentCard("Insurance", "assets/img/Insurance.png", "Up to date", Colors.green, isDark),
+                  _buildDocumentCard("RoadWorthy", "assets/img/RoadWorthy.png", "Renewal in 2 days", Colors.orange, isDark),
+                  _buildDocumentCard("ECOWAS ID Card", "assets/img/GhanaCard.png", "Expired", Colors.red, isDark),
                 ],
               ),
             ),
@@ -87,31 +93,7 @@ Future<void> _pickFileFor(String docType) async {
             SizedBox(height: 16),
 
             // Tabs for Tire info and Tire Checker
-            TabBar(
-              controller: _tabController,
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.black,
-              tabs: [
-                Tab(text: "Tire info"),
-                Tab(text: "Tire Checker"),
-              ],
-            ),
-            SizedBox(height: 12),
-
-            // Tire Info Form (static tab view for now)
-            if (_tabController.index == 0)
-              Column(
-                children: [
-                  TextField(
-                    decoration: InputDecoration(labelText: "Tire’s Brand"),
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    decoration: InputDecoration(labelText: "Tire’s Manufacturer"),
-                  ),
-                ],
-              ),
+           
           ],
         ),
       ),
@@ -142,7 +124,8 @@ Future<void> _pickFileFor(String docType) async {
     );
   }
 
-  Widget _buildDocumentCard(String title, String imagePath, String status, Color statusColor) {
+  Widget _buildDocumentCard(String title, String imagePath, String status, Color statusColor, bool isDark) {
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -155,7 +138,7 @@ Future<void> _pickFileFor(String docType) async {
           ),
         ),
         SizedBox(height: 4),
-        Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(title, style: TextStyle(fontWeight: FontWeight.bold , color: isDark ? Colors.black : Colors.white)),
         Text(status, style: TextStyle(color: statusColor)),
       ],
     );

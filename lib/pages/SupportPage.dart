@@ -1,6 +1,8 @@
 import 'package:carcare/common_widgets/common_widgets.dart';
+import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
@@ -57,6 +59,7 @@ void _launchPhoneDialer(String phoneNumber) async {
 
   @override
   Widget build(BuildContext context) {
+     bool isDark = Provider.of<ThemeProvider>(context).isDarkMode;
     return Scaffold(
        key: _scaffoldKey,
       appBar: AppBar(

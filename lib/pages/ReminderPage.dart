@@ -1,7 +1,9 @@
 import 'package:carcare/common_widgets/Navigation_Menu.dart';
+import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -38,6 +40,7 @@ Future<void> _deleteReminder(Map<String, dynamic> reminder) async {
     "reminders": FieldValue.arrayRemove([reminder])
   });
 
+  Navigator.of(context).pop();
   Navigator.of(context).pop();
   
 }
@@ -94,16 +97,19 @@ Future<void> _deleteReminder(Map<String, dynamic> reminder) async {
   @override
   Widget build(BuildContext context) {
     String selectedKey = (_selectedDay ?? _focusedDay).toIso8601String().substring(0, 10);
+
+    bool isDark = Provider.of<ThemeProvider>(context).isDarkMode;
     final dayReminders = _reminders[selectedKey] ?? [];
 
     return Scaffold(
       drawer: SideMenuDrawer(selectedIndex: selectedIndex),
       key: _scaffoldKey,
+      backgroundColor: isDark ? Colors.white : Colors.black87 ,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: Icon(Icons.menu, color: Colors.black),
+          icon: Icon(Icons.menu, color: isDark? Colors.black : Colors.white),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
       ),
@@ -115,18 +121,46 @@ Future<void> _deleteReminder(Map<String, dynamic> reminder) async {
             children: [
               Text(
                 DateFormat('MMMM d, y').format(_focusedDay),
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, color: isDark ? Colors.black : Colors.white),
               ),
-              Text("Today’s Reminder", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              Text("Today’s Reminder", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? Colors.black : Colors.white)),
               SizedBox(height: 10),
+
               TableCalendar(
-              availableCalendarFormats: const {
+
+                headerStyle: HeaderStyle(
+                    leftChevronIcon: Icon(
+                    Icons.chevron_left,
+                    color: isDark ? Colors.black : Colors.white,
+    ),
+
+                  rightChevronIcon: Icon(
+                    Icons.chevron_right,
+                    color: isDark ? Colors.black : Colors.white,
+    ) ,
+                   decoration: BoxDecoration(),
+                   titleTextStyle: TextStyle(
+                    color:  isDark ? Colors.black : Colors.white
+                   )
+                ),
+                daysOfWeekStyle:  DaysOfWeekStyle(
+                  weekdayStyle: TextStyle(
+                    color: isDark?  Colors.black:  Colors.white
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white: Colors.black 
+
+                  )
+                ),
+              availableCalendarFormats:  {
                    CalendarFormat.month: 'Month',
+
               },
                 focusedDay: _focusedDay,
                 firstDay: DateTime.utc(2020, 1, 1),
                 lastDay: DateTime.utc(2030, 12, 31),
                 calendarFormat: CalendarFormat.month,
+                
                 selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
                 onDaySelected: (selectedDay, focusedDay) {
                   setState(() {
@@ -135,6 +169,9 @@ Future<void> _deleteReminder(Map<String, dynamic> reminder) async {
                   });
                 },
                 calendarStyle: CalendarStyle(
+                  defaultTextStyle: TextStyle(
+                    color:  isDark ? Colors.black : Colors.white
+                  ) ,
                   todayDecoration: BoxDecoration(
                     color: Colors.transparent,
                     shape: BoxShape.circle,

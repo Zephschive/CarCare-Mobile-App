@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
       child: Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white: Colors.black87,
+          color: isDark ? Colors.white: Colors.black12,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: const Color(0xFFB3B2B2)),
           boxShadow: [
@@ -27,12 +27,12 @@ import 'package:provider/provider.dart';
           children: [
             Text(
               title,
-              style:  TextStyle(fontWeight: FontWeight.bold , color: isDark ? Colors.white : Colors.black),
+              style:  TextStyle(fontWeight: FontWeight.bold , color: isDark ? Colors.black: Colors.white ),
             ),
             const SizedBox(height: 5),
             Text(
               subtitle,
-              style: TextStyle(fontWeight: FontWeight.bold , color: isDark ? Colors.white60 : Colors.black),
+              style: TextStyle(fontWeight: FontWeight.bold , color: isDark ? Colors.grey :Colors.white60 ),
             ),
           ],
         ),

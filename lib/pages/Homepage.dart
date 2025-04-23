@@ -27,7 +27,7 @@ final PageController _pageController = PageController();
   
   
   User? _currentUser;
-  String? _fullName;
+  static String? _fullName;
 
   List<Map<String, dynamic>> _userCars = [];
   int _currentCarIndex = 0;
@@ -36,7 +36,9 @@ final PageController _pageController = PageController();
   void initState() {
     super.initState();
     _currentUser = _auth.currentUser;
+    if (_fullName == null) {
     _fetchFullName();
+  }
     _fetchCars();
     _loadUpcomingReminders();
   }
@@ -189,7 +191,7 @@ Future<void> _loadUpcomingReminders() async {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header Section
+          
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               color: isDark? Colors.blue : Colors.black87,
@@ -330,9 +332,8 @@ Future<void> _loadUpcomingReminders() async {
             );
           },
         ),
-    )
-    ,
-                ],
+    ),
+    ],
               ),
             ),
     

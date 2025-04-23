@@ -1,6 +1,8 @@
+import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
+import 'package:provider/provider.dart';
 
 class MaintenanceTipsPage extends StatefulWidget {
   @override
@@ -40,13 +42,19 @@ class _MaintenanceTipsPageState extends State<MaintenanceTipsPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Provider.of<ThemeProvider>(context).isDarkMode;
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: isDark ? Colors.white :Colors.black87 ,
       drawer: SideMenuDrawer(selectedIndex: selectedIndex),
       appBar: AppBar(
+        backgroundColor: isDark ? Colors.blue : Colors.black87,
         title: Text(
           "Maintenance Tips",
-          style: GoogleFonts.karla(fontSize: 20, fontWeight: FontWeight.bold),
+          style: GoogleFonts.karla(fontSize: 20, fontWeight: FontWeight.bold ,
+          color:  Colors.white
+          
+          ),
         ),
         leading: IconButton(
           icon: Icon(Icons.menu),
@@ -63,6 +71,10 @@ class _MaintenanceTipsPageState extends State<MaintenanceTipsPage> {
             TextField(
               decoration: InputDecoration(
                 hintText: "Search in service Reminder",
+                hintStyle: GoogleFonts.lexendDeca(
+                  color: isDark ? Colors.grey : Colors.white
+                )
+                ,
                 prefixIcon: Icon(Icons.search),
                 suffixIcon: Icon(Icons.tune),
                 border: OutlineInputBorder(
@@ -70,17 +82,20 @@ class _MaintenanceTipsPageState extends State<MaintenanceTipsPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
             // Maintenance Tips List
             Expanded(
               child: ListView.builder(
                 itemCount: tips.length,
                 itemBuilder: (context, index) {
+
+              
                   return Card(
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
+                    color: isDark ? Colors.white : Colors.black87,
                     child: ListTile(
                       title: Text(
                         tips[index]["title"]!,
@@ -92,7 +107,9 @@ class _MaintenanceTipsPageState extends State<MaintenanceTipsPage> {
                       ),
                       subtitle: Text(
                         tips[index]["description"]!,
-                        style: GoogleFonts.karla(fontSize: 14),
+                        style: GoogleFonts.karla(fontSize: 14,
+                          color: isDark ?Colors.grey :Colors.white
+                        ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -101,6 +118,8 @@ class _MaintenanceTipsPageState extends State<MaintenanceTipsPage> {
                 },
               ),
             ),
+
+              const SizedBox(height: 15)
           ],
         ),
       ),
