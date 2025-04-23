@@ -17,6 +17,7 @@ class Signuppage extends StatefulWidget {
 
 class _SignuppageState extends State<Signuppage> {
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController GhanaCardController = TextEditingController();
   final TextEditingController fullnameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmpasswordController = TextEditingController();
@@ -150,6 +151,10 @@ class _SignuppageState extends State<Signuppage> {
                   const SizedBox(height: 20),
                   MyInputField(
                     label: "E-mail",
+                    hintText: "Enter your email here",
+                    controller: emailController,
+                  ), MyInputField(
+                    label: "Ghana Card",
                     hintText: "Enter your email here",
                     controller: emailController,
                   ),

@@ -62,7 +62,9 @@ void _launchPhoneDialer(String phoneNumber) async {
      bool isDark = Provider.of<ThemeProvider>(context).isDarkMode;
     return Scaffold(
        key: _scaffoldKey,
+       backgroundColor: isDark? Colors.white : Colors.black87,
       appBar: AppBar(
+        backgroundColor:isDark? Colors.blue : Colors.black87 ,
           leading: IconButton(icon:Icon(Icons.menu),
           onPressed: (){
             _scaffoldKey.currentState?.openDrawer();
@@ -76,7 +78,9 @@ void _launchPhoneDialer(String phoneNumber) async {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Support Center", style: GoogleFonts.lexendDeca(fontSize: 22, fontWeight: FontWeight.normal)),
+            Text("Support Center", style: GoogleFonts.lexendDeca(fontSize: 22, fontWeight: FontWeight.normal,
+            color: Colors.white
+            )),
             const SizedBox(height: 20),
 
             // Call Us & Chat With Us Buttons
@@ -90,7 +94,9 @@ void _launchPhoneDialer(String phoneNumber) async {
             const SizedBox(height: 20),
 
             // Frequently Asked Questions Section
-            Text("Frequently Asked Questions", style: GoogleFonts.karla(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("Frequently Asked Questions", style: GoogleFonts.karla(fontSize: 18, fontWeight: FontWeight.bold,
+              color: isDark? Colors.black : Colors.white
+            )),
             const SizedBox(height: 10),
 
             Expanded(
@@ -105,14 +111,23 @@ void _launchPhoneDialer(String phoneNumber) async {
                     child: Column(
                       children: [
                         ListTile(
-                          title: Text(faqs[index]["question"]!, style: GoogleFonts.lexendDeca(fontSize: 16 , fontWeight: FontWeight.normal)),
-                          trailing: Icon(_expandedList[index] ? Icons.remove : Icons.add),
+                          tileColor: isDark? Colors.white : Colors.black87,
+                          title: Text(faqs[index]["question"]!, style: GoogleFonts.lexendDeca(fontSize: 16 , fontWeight: FontWeight.normal,
+                         color: isDark? Colors.black : Colors.white
+                          )),
+                          trailing: Icon(_expandedList[index] ? Icons.remove : Icons.add ,color:isDark? Colors.black : Colors.white ,),
                           onTap: () => _toggleExpand(index),
                         ),
                         if (_expandedList[index])
-                          Padding(
+                          Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
-                            child: Text(faqs[index]["answer"]!, style: GoogleFonts.karla(fontSize: 14)),
+                            decoration: BoxDecoration(
+                             color: isDark? Colors.white : Colors.black87 
+                            ),
+                            
+                            child: Text(faqs[index]["answer"]!, style: GoogleFonts.karla(fontSize: 14,
+                            color: isDark? Colors.black : Colors.white
+                            ))
                           ),
                       ],
                     ),

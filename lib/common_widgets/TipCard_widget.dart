@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
   
   
   Widget TipCard(String title, String subtitle, bool isDark) {
-    ;
+    
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Container(
