@@ -47,6 +47,7 @@ class _SignuppageState extends State<Signuppage> {
     // Basic validations
     if (fullnameController.text.isEmpty ||
         emailController.text.isEmpty ||
+        GhanaCardController.text.isEmpty ||
         passwordController.text.isEmpty ||
         confirmpasswordController.text.isEmpty) {
       showSnackBarError("Please fill in all fields.");
@@ -75,6 +76,7 @@ class _SignuppageState extends State<Signuppage> {
         await FirebaseFirestore.instance.collection("users").doc(user.uid).set({
           'fullname': fullnameController.text.trim(),
           'email': emailController.text.trim(),
+          'GhanaCardNumber': GhanaCardController.text.trim(),
           'uid': user.uid,
         });
 
@@ -156,7 +158,7 @@ class _SignuppageState extends State<Signuppage> {
                   ), MyInputField(
                     label: "Ghana Card",
                     hintText: "Enter your email here",
-                    controller: emailController,
+                    controller: GhanaCardController,
                   ),
                   const SizedBox(height: 20),
                   MyInputField(

@@ -1,9 +1,7 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddCarModal extends StatefulWidget {
@@ -26,14 +24,137 @@ class _AddCarModalState extends State<AddCarModal> {
    final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  final List<String> carBrands = ["Toyota", "Honda", "BMW", "Mercedes"];
-  final List<String> carTypes = ["SUV", "Sedan", "Truck", "Coupe"];
-  final Map<String, List<String>> carModels = {
-    "Toyota": ["Corolla", "Camry", "RAV4"],
-    "Honda": ["Civic", "Accord", "CR-V"],
-    "BMW": ["X5", "X3", "3 Series"],
-    "Mercedes": ["C-Class", "E-Class", "GLA"],
-  };
+ final List<String> carBrands = [
+  "Toyota",
+  "Honda",
+  "BMW",
+  "Mercedes",
+  "Nissan",
+  "Hyundai",
+  "Kia",
+  "Ford",
+  "Chevrolet",
+  "Volkswagen"
+];
+
+final List<String> carTypes = [
+  "SUV",
+  "Sedan",
+  "Truck",
+  "Coupe",
+  "Hatchback",
+  "Van",
+  "Pickup"
+];
+
+final Map<String, List<String>> carModels = {
+  "Toyota": [
+    "Corolla",
+    "Camry",
+    "Yaris",
+    "Vitz",
+    "RAV4",
+    "Fortuner",
+    "Prado",
+    "Land Cruiser",
+    "Hilux",
+    "Yaris Cross"
+  ],
+  "Honda": [
+    "Civic",
+    "Accord",
+    "Fit",
+    "City",
+    "CR-V",
+    "HR-V",
+    "BR-V"
+  ],
+  "BMW": [
+    "1 Series",
+    "2 Series",
+    "3 Series",
+    "5 Series",
+    "7 Series",
+    "X1",
+    "X3",
+    "X5",
+    "X6",
+    "X7"
+  ],
+  "Mercedes": [
+    "A-Class",
+    "C-Class",
+    "E-Class",
+    "S-Class",
+    "GLA",
+    "GLC",
+    "GLE",
+    "GLS",
+    "Sprinter"
+  ],
+  "Nissan": [
+    "Micra",
+    "Almera",
+    "Sentra",
+    "Altima",
+    "Maxima",
+    "Juke",
+    "Qashqai",
+    "X-Trail",
+    "Patrol",
+    "Navara",
+    "Leaf"
+  ],
+  "Hyundai": [
+    "i10",
+    "i20",
+    "i30",
+    "Accent",
+    "Elantra",
+    "Kona",
+    "Tucson",
+    "Santa Fe",
+    "Palisade"
+  ],
+  "Kia": [
+    "Picanto",
+    "Rio",
+    "Stonic",
+    "Seltos",
+    "Sportage",
+    "Sorento",
+    "Carnival"
+  ],
+  "Ford": [
+    "Fiesta",
+    "Focus",
+    "EcoSport",
+    "Escape",
+    "Edge",
+    "Explorer",
+    "Ranger",
+    "F-150"
+  ],
+  "Chevrolet": [
+    "Spark",
+    "Aveo",
+    "Cruze",
+    "Malibu",
+    "Equinox",
+    "Trailblazer",
+    "Tahoe",
+    "Suburban"
+  ],
+  "Volkswagen": [
+    "Polo",
+    "Golf",
+    "Jetta",
+    "Passat",
+    "Tiguan",
+    "Touareg"
+  ]
+};
+
   @override
   void initState() {
     super.initState();

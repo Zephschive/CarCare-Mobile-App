@@ -98,15 +98,18 @@ void initState() {
                       radius: 40,
                       backgroundImage: AssetImage("assets/img/Avatar.png"),
                     ),
-                    SizedBox(height: 20,),
+                    SizedBox(height: 40,),
                     Text(" ${_fullname ?? "(Loading)"}", style: GoogleFonts.abel(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 20
                     ),),
                   
-                     Text("ALEX Hdndfjaddan", style: GoogleFonts.abel(
+                  SizedBox(height: 25,),
+                     Text(" ${_currentUser!.email ?? "(Loading)"}", style: GoogleFonts.abel(
                       color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18
                     ),),
               
 

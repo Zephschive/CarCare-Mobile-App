@@ -43,6 +43,57 @@ final PageController _pageController = PageController();
     _loadUpcomingReminders();
   }
 
+void _showEditCarDialog(int index, Map<String, dynamic> car) {
+  final brandController = TextEditingController(text: car['brand']);
+  final modelController = TextEditingController(text: car['model']);
+
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text("Edit Car"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(controller: brandController, decoration: const InputDecoration(labelText: 'Brand')),
+          TextField(controller: modelController, decoration: const InputDecoration(labelText: 'Model')),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("Cancel"),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            _userCars[index]['brand'] = brandController.text;
+            _userCars[index]['model'] = modelController.text;
+
+            await _firestore.collection('users').doc(_currentUser!.uid).update({
+              'cars': _userCars,
+            });
+
+            setState(() {});
+            Navigator.pop(context);
+          },
+          child: const Text("Save"),
+        ),
+      ],
+    ),
+  );
+}
+void _deleteCar(int index) async {
+  _userCars.removeAt(index);
+  await _firestore.collection('users').doc(_currentUser!.uid).update({
+    'cars': _userCars,
+  });
+
+  setState(() {
+    if (_currentCarIndex >= _userCars.length) {
+      _currentCarIndex = (_userCars.isEmpty) ? 0 : _userCars.length - 1;
+    }
+  });
+}
+
 void _showReminderDetailsDialog(Map<String, dynamic> reminder) {
   showDialog(
     context: context,
@@ -224,20 +275,46 @@ Future<void> _loadUpcomingReminders() async {
     children: [
       Expanded(
         child: PageView.builder(
-          controller: _pageController,
-          itemCount: _userCars.isNotEmpty ? _userCars.length : 1,
-          onPageChanged: (index) {
-            setState(() {
-              _currentCarIndex = index;
-            });
-          },
-          itemBuilder: (context, index) {
-            return Image.asset(
-              CarCareImages.White_Car_topview,
-              fit: BoxFit.contain,
-            );
-          },
+  controller: _pageController,
+  itemCount: _userCars.isNotEmpty ? _userCars.length : 1,
+  onPageChanged: (index) {
+    setState(() {
+      _currentCarIndex = index;
+    });
+  },
+  itemBuilder: (context, index) {
+    if (_userCars.isEmpty) {
+      return const Center(child: Text("No car found"));
+    }
+
+    final car = _userCars[index];
+    return Column(
+      children: [
+        Expanded(
+          child: Image.asset(
+            CarCareImages.White_Car_topview,
+            fit: BoxFit.contain,
+          ),
         ),
+        
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.edit, color: Colors.white),
+              onPressed: () => _showEditCarDialog(index, car),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.redAccent),
+              onPressed: () => _deleteCar(index),
+            ),
+          ],
+        ),
+      ],
+    );
+  },
+),
+
       ),
       const SizedBox(height: 10),
       if (_userCars.isNotEmpty)

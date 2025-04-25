@@ -19,7 +19,7 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController EmailController = TextEditingController();
-  final TextEditingController idController = TextEditingController();
+  final TextEditingController  GhanaCardController= TextEditingController();
   final TextEditingController plateController = TextEditingController();
 
   bool isEditing = false;
@@ -41,7 +41,7 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
       final data = doc.data()!;
       nameController.text = data['fullname'] ?? '';
       EmailController.text = data['email'] ?? '';
-      idController.text = data['ghanaCard'] ?? '';
+      GhanaCardController.text = data['GhanaCardNumber'] ?? '';
       plateController.text = data['plate'] ?? '';
     }
 
@@ -55,7 +55,7 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
     });
 
     nameController.addListener(_checkIfChanged);
-    idController.addListener(_checkIfChanged);
+    GhanaCardController.addListener(_checkIfChanged);
     plateController.addListener(_checkIfChanged);
   }
 
@@ -77,8 +77,8 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
               if (uid != null) {
                 await FirebaseFirestore.instance.collection('users').doc(uid).update({
                   'fullname': nameController.text.trim(),
-                  'ghanaCard': idController.text.trim(),
-                  'plate': plateController.text.trim(),
+                  'GhanaCardNumber': GhanaCardController.text.trim(),
+                  'email': EmailController.text.trim(),
                 });
               }
               Navigator.pop(context);
@@ -132,7 +132,7 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(28),
               borderSide: BorderSide(
-                color: isDark ? Colors.white : Colors.grey,
+                color: isDark ? Colors.black : Colors.grey,
               ),
             ),
             focusedBorder: OutlineInputBorder(
@@ -202,8 +202,8 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                   ),
                   const SizedBox(height: 30),
                   buildTextField("Name", nameController),
-                  buildTextField("Ghana Card Number", idController),
-                  buildTextField("Plate Number", plateController),
+                  buildTextField("Email", EmailController),
+                  buildTextField("Ghana Card Number", GhanaCardController),
                   const SizedBox(height: 20),
                   if (showSave)
                     SizedBox(
