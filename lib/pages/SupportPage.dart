@@ -1,4 +1,5 @@
 import 'package:carcare/common_widgets/common_widgets.dart';
+import 'package:carcare/pages/ChatWithUspage.dart';
 import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -148,7 +149,7 @@ void _launchPhoneDialer(String phoneNumber) async {
        if (title == "Call Us") {
     _launchPhoneDialer("+233501234567"); // Replace with your actual support number
   } else {
-    print("$title clicked");
+    Navigator.push(context, MaterialPageRoute(builder: (context) =>ChatPage() ));
   }
       },
       child: Container(
