@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class GeminiChatService {
-  final String apiKey = 'AIzaSyCS177rfuggxOgsrNB0yZyl6BaGyqNWVsY';
+  final String apiKey = '';
 
   Future<String> sendMessage(String userMessage) async {
     final url = Uri.parse(
