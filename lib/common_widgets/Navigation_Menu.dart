@@ -50,7 +50,7 @@ void initState() {
 
   if (_currentUser == null) return;
   try {
-    final email = _currentUser!.email;
+    final email = _currentUser.email;
     if (email == null) return;
 
     QuerySnapshot querySnapshot = await _firestore

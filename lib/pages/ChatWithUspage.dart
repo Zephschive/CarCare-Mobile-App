@@ -1,37 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-class GeminiChatService {
-  final String apiKey = 'AIzaSyCS177rfuggxOgsrNB0yZyl6BaGyqNWVsY';
-
-  Future<String> sendMessage(String userMessage) async {
-    final url = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$apiKey');
-
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'contents': [
-          {
-            'parts': [
-              {'text': userMessage}
-            ]
-          }
-        ]
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final reply = data['candidates'][0]['content']['parts'][0]['text'];
-      return reply;
-    } else {
-      throw Exception('Failed to get response: ${response.body}');
-    }
-  }
-}
+import 'package:flutter_gemini/flutter_gemini.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -43,11 +11,19 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = [];
-  final GeminiChatService _chatService = GeminiChatService();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final gemini = Gemini.instance;
+
   bool _isSending = false;
 
-  void _sendMessage() async {
+  @override
+  void initState() {
+    super.initState();
+    
+  }
+
+  Future<void> _sendMessage() async {
     final userMessage = _controller.text.trim();
     if (userMessage.isEmpty) return;
 
@@ -57,21 +33,24 @@ class _ChatPageState extends State<ChatPage> {
       _isSending = true;
     });
 
-    try {
-      final botReply = await _chatService.sendMessage(userMessage);
-      setState(() {
-        _messages.add({'sender': 'bot', 'text': botReply});
-      });
-    } catch (e) {
-      print(_messages);
-      setState(() {
-        _messages.add({'sender': 'bot', 'text': 'Sorry, something went wrong.'});
-      });
-    } finally {
-      setState(() {
-        _isSending = false;
-      });
-    }
+  try {
+  final response = await gemini.text(userMessage);
+  final botReply = response?.output ?? 'No response from Gemini.';
+
+  setState(() {
+    _messages.add({'sender': 'bot', 'text': botReply});
+  });
+} catch (e) {
+  setState(() {
+    _messages.add({'sender': 'bot', 'text': 'Sorry, something went wrong.'});
+  });
+} finally {
+  setState(() {
+    _isSending = false;
+  });
+}
+
+
   }
 
   Widget _buildMessage(Map<String, String> message) {
@@ -87,7 +66,7 @@ class _ChatPageState extends State<ChatPage> {
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(
-          message['text']!,
+          message['text'] ?? '',
           style: const TextStyle(color: Colors.white),
         ),
       ),
@@ -97,7 +76,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: _scaffoldKey,
+      key: _scaffoldKey,
       appBar: AppBar(
         leading: const Padding(
           padding: EdgeInsets.all(8.0),
@@ -110,16 +89,17 @@ class _ChatPageState extends State<ChatPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('CarCare Bot'),
-            Text('Welcome to our Live Chat!', style: TextStyle(fontSize: 12))
+            Text('Welcome to our Live Chat!', style: TextStyle(fontSize: 12)),
           ],
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: IconButton(icon: const Icon(Icons.menu), 
-            onPressed: (){
-              _scaffoldKey.currentState?.openDrawer();
-            },
+            child: IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                _scaffoldKey.currentState?.openDrawer();
+              },
             ),
           )
         ],
@@ -169,10 +149,10 @@ class _ChatPageState extends State<ChatPage> {
                         _isSending ? Colors.grey : Colors.blue.shade600,
                     child: const Icon(Icons.send, color: Colors.white),
                   ),
-                )
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

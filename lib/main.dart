@@ -6,10 +6,15 @@ import 'package:carcare/pages/SplashPage.dart';
 import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 
+
 void main() async {
+    Gemini.init(
+    apiKey: '',
+  );
    WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(
