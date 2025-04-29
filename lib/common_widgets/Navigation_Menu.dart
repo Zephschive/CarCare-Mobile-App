@@ -31,8 +31,10 @@ class _SideMenuDrawerState extends State<SideMenuDrawer> {
 @override
 void initState() {
   super.initState();
-  if (_fullname == null) {
+  if (_cachedFullname == null) {
     _fetchFullName();
+  }else{
+
   }
 }
 
@@ -41,18 +43,12 @@ void initState() {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
     Future<void> _fetchFullName() async {
-  if (_cachedFullname != null) {
-    setState(() {
-      _fullname = _cachedFullname;
-    });
-    return;
-  }
-
   if (_currentUser == null) return;
-  try {
-    final email = _currentUser.email;
-    if (email == null) return;
 
+  final email = _currentUser!.email;
+  if (email == null) return;
+
+  try {
     QuerySnapshot querySnapshot = await _firestore
         .collection("users")
         .where("email", isEqualTo: email)
@@ -61,16 +57,25 @@ void initState() {
     if (querySnapshot.docs.isNotEmpty) {
       DocumentSnapshot userDoc = querySnapshot.docs.first;
       String fullName = userDoc.get("fullname");
-      _cachedFullname = fullName;
 
-      setState(() {
-        _fullname = fullName;
-      });
+      // Update only if different or _cachedFullname is null
+      if (_cachedFullname == null || _cachedFullname != fullName) {
+        _cachedFullname = fullName;
+        setState(() {
+          _fullname = fullName;
+        });
+      } else {
+        // Same name as cache, just set from cache
+        setState(() {
+          _fullname = _cachedFullname;
+        });
+      }
     }
   } catch (e) {
     debugPrint("Error fetching full name: $e");
   }
 }
+
 
 
   @override
@@ -99,7 +104,7 @@ void initState() {
                       backgroundImage: AssetImage("assets/img/Avatar.png"),
                     ),
                     SizedBox(height: 40,),
-                    Text(" ${_fullname ?? "(Loading)"}", style: GoogleFonts.abel(
+                    Text(" ${_cachedFullname ?? "(Loading)"}", style: GoogleFonts.abel(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 20

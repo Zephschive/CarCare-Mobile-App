@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:carcare/common_widgets/common_widgets.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -16,6 +17,7 @@ class _ChatPageState extends State<ChatPage> {
   final gemini = Gemini.instance;
 
   bool _isSending = false;
+  int selectedIndex = 10;
 
   @override
   void initState() {
@@ -77,6 +79,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      drawer: SideMenuDrawer(selectedIndex: selectedIndex),
       appBar: AppBar(
         leading: const Padding(
           padding: EdgeInsets.all(8.0),

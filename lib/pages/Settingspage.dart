@@ -1,3 +1,4 @@
+import 'package:carcare/pages/LoginPage.dart';
 import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
@@ -55,6 +56,7 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
     });
 
     nameController.addListener(_checkIfChanged);
+    EmailController.addListener(_checkIfChanged);
     GhanaCardController.addListener(_checkIfChanged);
     plateController.addListener(_checkIfChanged);
   }
@@ -73,7 +75,8 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           TextButton(
             onPressed: () async {
-              final uid = FirebaseAuth.instance.currentUser?.uid;
+           try{
+                final uid = FirebaseAuth.instance.currentUser?.uid;
               if (uid != null) {
                 await FirebaseFirestore.instance.collection('users').doc(uid).update({
                   'fullname': nameController.text.trim(),
@@ -81,11 +84,30 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                   'email': EmailController.text.trim(),
                 });
               }
+
               Navigator.pop(context);
               setState(() {
                 isEditing = false;
                 showSave = false;
               });
+                   ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Account Succesfully Updated"), behavior: SnackBarBehavior.floating,backgroundColor: Colors.green, ),
+                 );
+
+           }catch(e){
+
+               Navigator.pop(context);
+              setState(() {
+                isEditing = false;
+                showSave = false;
+              });
+
+                 ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("An Error has occured: $e "), behavior: SnackBarBehavior.floating,backgroundColor: Colors.red, ),
+                 );
+           }
+        
+
             },
             child: const Text("Yes, Update"),
           )
@@ -166,6 +188,20 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
             TextButton(
               onPressed: startEditing,
               child: const Text("Edit", style: TextStyle(color: Colors.blue)),
+            ) else 
+             TextButton(
+              onPressed: (){
+                 setState(() {
+              isEditing = false;
+              showSave = false;
+            });
+
+                  nameController.removeListener(_checkIfChanged);
+                  EmailController.removeListener(_checkIfChanged);
+                GhanaCardController.removeListener(_checkIfChanged);
+                  plateController.removeListener(_checkIfChanged);
+              },
+              child: const Text("Done", style: TextStyle(color: Colors.blue)),
             )
         ],
       ),
@@ -205,7 +241,8 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                   buildTextField("Email", EmailController),
                   buildTextField("Ghana Card Number", GhanaCardController),
                   const SizedBox(height: 20),
-                  if (showSave)
+
+                   if (showSave)
                     SizedBox(
                       width: double.infinity,
                       height: 48,
@@ -216,6 +253,27 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                       ),
                     ),
                   const SizedBox(height: 30),
+
+                  SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: ()async {
+                          await FirebaseAuth.instance.signOut();
+                         
+
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> LoginPage()));
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Sign Out Successful"), behavior: SnackBarBehavior.floating,backgroundColor: Colors.green, ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                        child: const Text("Log - out ", style: TextStyle(color: Colors.white)),
+                      ),
+                    ),
+
+                 
                 ],
               ),
             ),

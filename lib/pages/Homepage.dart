@@ -145,27 +145,40 @@ Future<void> _loadUpcomingReminders() async {
 }
 
 
-  Future<void> _fetchFullName() async {
-    if (_currentUser == null) return;
-    try {
-      final email = _currentUser!.email;
-      if (email == null) return;
+ Future<void> _fetchFullName() async {
+  if (_currentUser == null) return;
 
-      QuerySnapshot querySnapshot = await _firestore
-          .collection("users")
-          .where("email", isEqualTo: email)
-          .get();
+  final email = _currentUser!.email;
+  if (email == null) return;
 
-      if (querySnapshot.docs.isNotEmpty) {
-        DocumentSnapshot userDoc = querySnapshot.docs.first;
+  try {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection("users")
+        .where("email", isEqualTo: email)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      DocumentSnapshot userDoc = querySnapshot.docs.first;
+      String fullName = userDoc.get("fullname");
+
+      // Update only if different or _cachedFullname is null
+      if (_fullName == null || _fullName != fullName) {
+        _fullName = fullName;
         setState(() {
-          _fullName = userDoc.get("fullname") as String?;
+          _fullName = fullName;
+        });
+      } else {
+        // Same name as cache, just set from cache
+        setState(() {
+          _fullName = _fullName;
         });
       }
-    } catch (e) {
-      debugPrint("Error fetching full name: $e");
     }
+  } catch (e) {
+    debugPrint("Error fetching full name: $e");
   }
+}
+
 
   Future<void> _fetchCars() async {
     if (_currentUser == null) return;
