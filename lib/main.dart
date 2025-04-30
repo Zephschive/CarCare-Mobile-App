@@ -1,3 +1,4 @@
+import 'package:carcare/UserProvider.dart';
 import 'package:carcare/blankscreen.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
 import 'package:carcare/pages/Homepage.dart';
@@ -15,6 +16,10 @@ void main() async {
     Gemini.init(
     apiKey: '',
   );
+
+  MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => UserProvider())
+  ]);
    WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(
