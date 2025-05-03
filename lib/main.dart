@@ -11,7 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   
-  Gemini.init(apiKey: 'AIzaSyCS177rfuggxOgsrNB0yZyl6BaGyqNWVsY');
+  Gemini.init(apiKey: '');
 
   runApp(
     MultiProvider(
