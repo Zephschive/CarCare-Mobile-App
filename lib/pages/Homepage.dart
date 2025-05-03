@@ -1,3 +1,4 @@
+import 'package:carcare/UserProvider.dart';
 import 'package:carcare/common_widgets/Navigation_Menu.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
 import 'package:carcare/theme_provider/themeprovider.dart';
@@ -19,7 +20,8 @@ class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  // at the top
+ 
+ 
 
 // Add this controller in your _HomePageState
 final PageController _pageController = PageController();
@@ -36,11 +38,10 @@ final PageController _pageController = PageController();
   void initState() {
     super.initState();
     _currentUser = _auth.currentUser;
-    if (_fullName == null) {
-    _fetchFullName();
-  }
+  final userProvider = Provider.of<UserProvider>(context, listen: false);
     _fetchCars();
     _loadUpcomingReminders();
+    userProvider.fetchUserDetails();
   }
 
 void _showEditCarDialog(int index, Map<String, dynamic> car) {
@@ -145,39 +146,7 @@ Future<void> _loadUpcomingReminders() async {
 }
 
 
- Future<void> _fetchFullName() async {
-  if (_currentUser == null) return;
 
-  final email = _currentUser!.email;
-  if (email == null) return;
-
-  try {
-    QuerySnapshot querySnapshot = await _firestore
-        .collection("users")
-        .where("email", isEqualTo: email)
-        .get();
-
-    if (querySnapshot.docs.isNotEmpty) {
-      DocumentSnapshot userDoc = querySnapshot.docs.first;
-      String fullName = userDoc.get("fullname");
-
-      // Update only if different or _cachedFullname is null
-      if (_fullName == null || _fullName != fullName) {
-        _fullName = fullName;
-        setState(() {
-          _fullName = fullName;
-        });
-      } else {
-        // Same name as cache, just set from cache
-        setState(() {
-          _fullName = _fullName;
-        });
-      }
-    }
-  } catch (e) {
-    debugPrint("Error fetching full name: $e");
-  }
-}
 
 
   Future<void> _fetchCars() async {
@@ -238,6 +207,7 @@ Future<void> _loadUpcomingReminders() async {
 
   @override
   Widget build(BuildContext context) {
+     final userProvider = Provider.of<UserProvider>(context);
     bool isDark = Provider.of<ThemeProvider>(context).isDarkMode;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -264,7 +234,7 @@ Future<void> _loadUpcomingReminders() async {
                 children: [
                   const SizedBox(height: 10),
                   Text(
-                    "Welcome ${_fullName ?? "(Loading)"}",
+                    "Welcome ${userProvider.fullname ?? "(Loading)"}",
                     style: GoogleFonts.karla(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -297,7 +267,7 @@ Future<void> _loadUpcomingReminders() async {
   },
   itemBuilder: (context, index) {
     if (_userCars.isEmpty) {
-      return const Center(child: Text("No car found"));
+      return  Center(child: Text("No car found", style: TextStyle( color:isDark ? Colors.black : Colors.white ),));
     }
 
     final car = _userCars[index];

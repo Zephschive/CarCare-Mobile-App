@@ -66,7 +66,7 @@ void _launchPhoneDialer(String phoneNumber) async {
        backgroundColor: isDark? Colors.white : Colors.black87,
       appBar: AppBar(
         backgroundColor:isDark? Colors.blue : Colors.black87 ,
-          leading: IconButton(icon:Icon(Icons.menu),
+          leading: IconButton(icon:Icon(Icons.menu, color: isDark ? Colors.black : Colors.white ,),
           onPressed: (){
             _scaffoldKey.currentState?.openDrawer();
           },
@@ -112,7 +112,7 @@ void _launchPhoneDialer(String phoneNumber) async {
                     child: Column(
                       children: [
                         ListTile(
-                          tileColor: isDark? Colors.white : Colors.black87,
+                          tileColor: isDark? const Color.fromARGB(255, 248, 245, 245) : Colors.black87,
                           title: Text(faqs[index]["question"]!, style: GoogleFonts.lexendDeca(fontSize: 16 , fontWeight: FontWeight.normal,
                          color: isDark? Colors.black : Colors.white
                           )),
@@ -123,7 +123,7 @@ void _launchPhoneDialer(String phoneNumber) async {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
                             decoration: BoxDecoration(
-                             color: isDark? Colors.white : Colors.black87 
+                             color: isDark? const Color.fromARGB(255, 248, 245, 245)   : Colors.black87 
                             ),
                             
                             child: Text(faqs[index]["answer"]!, style: GoogleFonts.karla(fontSize: 14,

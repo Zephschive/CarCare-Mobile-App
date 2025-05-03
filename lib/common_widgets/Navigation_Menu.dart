@@ -1,3 +1,4 @@
+import 'package:carcare/UserProvider.dart';
 import 'package:carcare/pages/Documentspage.dart';
 import 'package:carcare/pages/ReminderPage.dart';
 import 'package:carcare/pages/Settingspage.dart';
@@ -28,60 +29,44 @@ class SideMenuDrawer extends StatefulWidget {
 class _SideMenuDrawerState extends State<SideMenuDrawer> {
   static String? _cachedFullname;
   String? _fullname;
+
+
 @override
 void initState() {
   super.initState();
-  if (_cachedFullname == null) {
-    _fetchFullName();
-  }else{
 
-  }
+  final userProvider = Provider.of<UserProvider>(context, listen: false);
+  userProvider.fetchUserDetails();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+    Provider.of<UserProvider>(context, listen: false);
+  });
 }
 
   final _currentUser = FirebaseAuth.instance.currentUser;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-    Future<void> _fetchFullName() async {
-  if (_currentUser == null) return;
-
-  final email = _currentUser!.email;
-  if (email == null) return;
-
-  try {
-    QuerySnapshot querySnapshot = await _firestore
-        .collection("users")
-        .where("email", isEqualTo: email)
-        .get();
-
-    if (querySnapshot.docs.isNotEmpty) {
-      DocumentSnapshot userDoc = querySnapshot.docs.first;
-      String fullName = userDoc.get("fullname");
-
-      // Update only if different or _cachedFullname is null
-      if (_cachedFullname == null || _cachedFullname != fullName) {
-        _cachedFullname = fullName;
-        setState(() {
-          _fullname = fullName;
-        });
-      } else {
-        // Same name as cache, just set from cache
-        setState(() {
-          _fullname = _cachedFullname;
-        });
-      }
-    }
-  } catch (e) {
-    debugPrint("Error fetching full name: $e");
-  }
-}
+ 
 
 
 
   @override
   Widget build(BuildContext context) {
-
+  final userProvider = Provider.of<UserProvider>(context);
   bool isDark = Provider.of<ThemeProvider>(context).isDarkMode;
+
+      ImageProvider avatarImage;
+    if (userProvider.avatarPath != null && userProvider.avatarPath!.isNotEmpty) {
+      // if it's a URL
+    
+
+        // or if it's an asset identifier
+        avatarImage = AssetImage(userProvider.avatarPath!);
+      
+    } else {
+      // fallback
+      avatarImage = const AssetImage("assets/img/Avatar.png");
+    }
  
     return Drawer(
       backgroundColor: isDark ?Colors.white : Colors.black87,
@@ -101,17 +86,17 @@ void initState() {
               children: [
                   CircleAvatar(
                       radius: 40,
-                      backgroundImage: AssetImage("assets/img/Avatar.png"),
+                      backgroundImage: avatarImage,
                     ),
                     SizedBox(height: 40,),
-                    Text(" ${_cachedFullname ?? "(Loading)"}", style: GoogleFonts.abel(
+                    Text(" ${userProvider.fullname ?? "(Loading)"}", style: GoogleFonts.abel(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 20
                     ),),
                   
                   SizedBox(height: 25,),
-                     Text(" ${_currentUser!.email ?? "(Loading)"}", style: GoogleFonts.abel(
+                     Text(" ${userProvider.email?? "(Loading)"}", style: GoogleFonts.abel(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
                       fontSize: 18

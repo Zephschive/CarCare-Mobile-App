@@ -1,8 +1,4 @@
 import 'package:carcare/UserProvider.dart';
-import 'package:carcare/blankscreen.dart';
-import 'package:carcare/common_widgets/common_widgets.dart';
-import 'package:carcare/pages/Homepage.dart';
-import 'package:carcare/pages/Navigator_Page.dart';
 import 'package:carcare/pages/SplashPage.dart';
 import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:flutter/material.dart';
@@ -11,49 +7,37 @@ import 'package:flutter_gemini/flutter_gemini.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 
-
 void main() async {
-    Gemini.init(
-    apiKey: '',
-  );
-
-  MultiProvider(providers: [
-    ChangeNotifierProvider(create: (_) => UserProvider())
-  ]);
-   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  
+  Gemini.init(apiKey: 'AIzaSyCS177rfuggxOgsrNB0yZyl6BaGyqNWVsY');
+
   runApp(
-   ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+      ],
       child: MyApp(),
     ),
   );
-  
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return AnimatedTheme(
-       duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOut,
-        data: ThemeProvider().isDarkMode ? ThemeData.dark() : ThemeData.light(),
-      child: MaterialApp(
-        title: 'Car Care App',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          
-          useMaterial3: false,
-          
-        ),
-        home:Splashpage()
-      ),
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
+    return MaterialApp(
+      title: 'Car Care App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      home: Splashpage(),
     );
   }
 }
-
-
- 

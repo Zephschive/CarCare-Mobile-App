@@ -1,6 +1,8 @@
+import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
+import 'package:provider/provider.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -17,7 +19,7 @@ class _ChatPageState extends State<ChatPage> {
   final gemini = Gemini.instance;
 
   bool _isSending = false;
-  int selectedIndex = 10;
+  int selectedIndex = 5;
 
   @override
   void initState() {
@@ -77,10 +79,13 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+     bool isDark = Provider.of<ThemeProvider>(context).isDarkMode;
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: isDark ? Colors.white : Colors.black87,
       drawer: SideMenuDrawer(selectedIndex: selectedIndex),
       appBar: AppBar(
+        backgroundColor: isDark ? Colors.white : Colors.black87,
         leading: const Padding(
           padding: EdgeInsets.all(8.0),
           child: CircleAvatar(
@@ -88,18 +93,18 @@ class _ChatPageState extends State<ChatPage> {
             child: Icon(Icons.chat, color: Colors.white),
           ),
         ),
-        title: const Column(
+        title:  Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('CarCare Bot'),
-            Text('Welcome to our Live Chat!', style: TextStyle(fontSize: 12)),
+            Text('CarCare Bot', style: TextStyle(color: isDark ? Colors.black : Colors.white ),),
+            Text('Welcome to our Live Chat!', style: TextStyle(fontSize: 12, color: isDark ? Colors.black : Colors.white )),
           ],
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: IconButton(
-              icon: const Icon(Icons.menu),
+              icon:  Icon(Icons.menu, color: isDark ? Colors.black : Colors.white ),
               onPressed: () {
                 _scaffoldKey.currentState?.openDrawer();
               },
@@ -125,20 +130,23 @@ class _ChatPageState extends State<ChatPage> {
               children: [
                 Expanded(
                   child: TextField(
+                    style: TextStyle(color :isDark ? Colors.black : Colors.white ),
                     controller: _controller,
                     decoration: InputDecoration(
                       hintText: 'Enter your message',
+                      hintStyle: TextStyle( color :isDark ? Colors.black : Colors.white  ),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: isDark ? Colors.white : Colors.black87,
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
                       border: OutlineInputBorder(
+
                         borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide(color: Colors.blue.shade400),
+                        borderSide: BorderSide(color: Colors.blue.shade400,  ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide(color: Colors.blue.shade400),
+                        borderSide: BorderSide(color: Colors.blue.shade400,),
                       ),
                     ),
                     onSubmitted: (_) => _sendMessage(),
