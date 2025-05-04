@@ -205,7 +205,8 @@ Future<void> _loadUpcomingReminders() async {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        builder: (context) => AddCarModal(),
+        builder: (context) => AddCarModal(onCarAdded:_fetchCars
+        ,),
       );
     }
   }

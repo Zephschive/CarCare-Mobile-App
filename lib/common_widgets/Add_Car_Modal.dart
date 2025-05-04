@@ -5,7 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddCarModal extends StatefulWidget {
-  const AddCarModal({super.key});
+     final VoidCallback onCarAdded;
+  const AddCarModal({Key? key, required this.onCarAdded}) : super(key: key);
 
   @override
   State<AddCarModal> createState() => _AddCarModalState();
@@ -162,6 +163,21 @@ final Map<String, List<String>> carModels = {
     _fetchUserUid();
   }
 
+ void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Error"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: const Text("OK"),
+            onPressed: () => Navigator.of(context).pop(),
+          )
+        ],
+      ),
+    );
+  }
   User? _currentUser ;
 
 
@@ -193,6 +209,12 @@ final Map<String, List<String>> carModels = {
 
 void _submitCar() async {
   FocusScope.of(context).unfocus(); // close keyboard
+
+
+   if (licensePlateController.text.isEmpty || selectedBrand == null || selectedType == null || (isCustomModel ? customModelController.text.isEmpty : selectedModel == null)) {
+      _showErrorDialog("Please fill in all fields");
+      return;
+    }
 
   showDialog(
     context: context,
@@ -230,9 +252,12 @@ void _submitCar() async {
         }
       ])
     }, SetOptions(merge: true));
+    widget.onCarAdded();
 
     Navigator.pop(context); // close loading
     Navigator.pop(context); // close modal
+
+  
 
     ScaffoldMessenger.of(Navigator.of(context).overlay!.context).showSnackBar(
       SnackBar(
