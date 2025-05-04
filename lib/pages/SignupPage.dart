@@ -37,7 +37,7 @@ class _SignuppageState extends State<Signuppage> {
   void _showSnack(String msg, {bool error = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg),
+        content: Text(msg, style: TextStyle(color: Colors.white),),
         backgroundColor: error ? Colors.red : Colors.green,
         behavior: SnackBarBehavior.floating,
       ),
@@ -106,10 +106,10 @@ class _SignuppageState extends State<Signuppage> {
                 const SizedBox(height: 20),
                 Text("Create your account",
                     style:
-                        const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                        const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
                 const SizedBox(height: 10),
                 Text("Choose an avatar and enter your details below",
-                    style: GoogleFonts.atkinsonHyperlegible(fontSize: 16)),
+                    style: GoogleFonts.atkinsonHyperlegible(fontSize: 16, color:Colors.grey )),
                 const SizedBox(height: 30),
 
                 // AVATAR SELECTION ROW

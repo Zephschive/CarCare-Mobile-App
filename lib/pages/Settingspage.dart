@@ -1,11 +1,12 @@
+import 'package:carcare/pages/GetStartedPage1.dart';
 import 'package:carcare/pages/LoginPage.dart';
+import 'package:carcare/common_widgets/Navigation_Menu.dart';
 import 'package:carcare/theme_provider/themeprovider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:carcare/common_widgets/common_widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfileSettingsPage extends StatefulWidget {
   const ProfileSettingsPage({Key? key}) : super(key: key);
@@ -19,31 +20,41 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
   int selectedIndex = 6;
 
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController EmailController = TextEditingController();
-  final TextEditingController  GhanaCardController= TextEditingController();
-  final TextEditingController plateController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController ghanaCardController = TextEditingController();
 
   bool isEditing = false;
   bool showSave = false;
   bool isLoading = true;
+  String? avatarPath;
+
+  // List of available avatar asset paths
+  final List<String> avatarOptions = [
+    'assets/img/avatar1.png',
+    'assets/img/avatar2.png',
+    'assets/img/avatar3.png',
+    'assets/img/avatar4.png',
+    'assets/img/avatar5.png',
+  ];
 
   @override
   void initState() {
     super.initState();
-    fetchUserData();
+    _loadProfile();
   }
 
-  Future<void> fetchUserData() async {
+  Future<void> _loadProfile() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
-    final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
     if (doc.exists) {
       final data = doc.data()!;
       nameController.text = data['fullname'] ?? '';
-      EmailController.text = data['email'] ?? '';
-      GhanaCardController.text = data['GhanaCardNumber'] ?? '';
-      plateController.text = data['plate'] ?? '';
+      emailController.text = data['email'] ?? '';
+      ghanaCardController.text = data['GhanaCardNumber'] ?? '';
+      avatarPath = data['avatarPath'] as String?;
     }
 
     setState(() => isLoading = false);
@@ -54,114 +65,127 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
       isEditing = true;
       showSave = false;
     });
-
-    nameController.addListener(_checkIfChanged);
-    EmailController.addListener(_checkIfChanged);
-    GhanaCardController.addListener(_checkIfChanged);
-    plateController.addListener(_checkIfChanged);
+    // Show save button when any field changes
+    [nameController, emailController, ghanaCardController]
+        .forEach((c) => c.addListener(() => setState(() => showSave = true)));
   }
 
-  void _checkIfChanged() {
-    setState(() => showSave = true);
-  }
+  Future<void> saveChanges() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
 
-  void saveChanges() {
-    showDialog(
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("Are you sure?"),
         content: const Text("You’re about to update your profile."),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           TextButton(
-            onPressed: () async {
-           try{
-                final uid = FirebaseAuth.instance.currentUser?.uid;
-              if (uid != null) {
-                await FirebaseFirestore.instance.collection('users').doc(uid).update({
-                  'fullname': nameController.text.trim(),
-                  'GhanaCardNumber': GhanaCardController.text.trim(),
-                  'email': EmailController.text.trim(),
-                });
-              }
-
-              Navigator.pop(context);
-              setState(() {
-                isEditing = false;
-                showSave = false;
-              });
-                   ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Account Succesfully Updated"), behavior: SnackBarBehavior.floating,backgroundColor: Colors.green, ),
-                 );
-
-           }catch(e){
-
-               Navigator.pop(context);
-              setState(() {
-                isEditing = false;
-                showSave = false;
-              });
-
-                 ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("An Error has occured: $e "), behavior: SnackBarBehavior.floating,backgroundColor: Colors.red, ),
-                 );
-           }
-        
-
-            },
-            child: const Text("Yes, Update"),
-          )
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text("Cancel")),
+          TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("Yes, Update")),
         ],
       ),
     );
+    if (confirmed != true) return;
+
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'fullname': nameController.text.trim(),
+        'email': emailController.text.trim(),
+        'GhanaCardNumber': ghanaCardController.text.trim(),
+        if (avatarPath != null) 'avatarPath': avatarPath!,
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Profile updated successfully",style: TextStyle(color: Colors.white),),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.green,
+        ),
+      );
+      setState(() {
+        isEditing = false;
+        showSave = false;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error updating profile: $e"),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
-  Widget buildLabel(bool isDark, String label, {String? note}) {
+  Future<void> pickAvatar() async {
+    final choice = await showDialog<String>(
+      context: context,
+      builder: (_) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Wrap(
+            spacing: 16,
+            runSpacing: 16,
+            children: avatarOptions.map((path) {
+              return GestureDetector(
+                onTap: () => Navigator.pop(context, path),
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundImage: AssetImage(path),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+    if (choice != null) {
+      setState(() {
+        avatarPath = choice;
+        showSave = true;
+      });
+    }
+  }
+
+  Widget buildLabel(bool isDark, String label) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6, top: 18),
-      child: RichText(
-        text: TextSpan(
-          text: label,
-          style: GoogleFonts.lexendDeca(
-              color: isDark ? Colors.black : Colors.white,
-              fontWeight: FontWeight.bold),
-          children: [
-            if (note != null)
-              TextSpan(
-                text: ' $note',
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-          ],
+      child: Text(
+        label,
+        style: GoogleFonts.lexendDeca(
+          color: isDark ? Colors.black : Colors.white,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
   }
 
-  Widget buildTextField(String label, TextEditingController controller) {
+  Widget buildTextField(
+      String label, TextEditingController controller, bool readOnly) {
     final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         buildLabel(isDark, label),
         TextField(
           controller: controller,
-          readOnly: !isEditing,
-          style: GoogleFonts.lexendDeca(
-            color: isDark ? Colors.black : Colors.white,
-          ),
+          readOnly: readOnly,
+          style: TextStyle(color: isDark ? Colors.black : Colors.white),
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(28),
-              borderSide: BorderSide(
-                color: isDark ? Colors.black : Colors.grey,
-              ),
+              borderSide:
+                  BorderSide(color: isDark ? Colors.black : Colors.grey),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(28),
               borderSide: const BorderSide(color: Colors.blue, width: 2),
             ),
-            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
           ),
         ),
       ],
@@ -186,23 +210,14 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
         actions: [
           if (!isEditing)
             TextButton(
-              onPressed: startEditing,
-              child: const Text("Edit", style: TextStyle(color: Colors.blue)),
-            ) else 
-             TextButton(
-              onPressed: (){
-                 setState(() {
-              isEditing = false;
-              showSave = false;
-            });
-
-                  nameController.removeListener(_checkIfChanged);
-                  EmailController.removeListener(_checkIfChanged);
-                GhanaCardController.removeListener(_checkIfChanged);
-                  plateController.removeListener(_checkIfChanged);
-              },
-              child: const Text("Done", style: TextStyle(color: Colors.blue)),
-            )
+                onPressed: startEditing,
+                child:
+                    const Text("Edit", style: TextStyle(color: Colors.blue)))
+          else if (showSave)
+            TextButton(
+                onPressed: saveChanges,
+                child:
+                    const Text("Save", style: TextStyle(color: Colors.blue)))
         ],
       ),
       body: isLoading
@@ -211,21 +226,35 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  const SizedBox(height: 20),
-                  Center(
-                    child: Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        const CircleAvatar(
+                  // Avatar with edit icon overlay
+                  Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      GestureDetector(
+                        onTap: isEditing ? pickAvatar : null,
+                        child: CircleAvatar(
                           radius: 50,
-                          backgroundImage: AssetImage('assets/avatar.jpg'),
+                          backgroundImage: avatarPath != null
+                              ? AssetImage(avatarPath!)
+                              : const AssetImage('assets/img/Avatar.png'),
                         ),
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundColor: Colors.grey[200],
+                      ),
+                      if (isEditing)
+                        Positioned(
+                          right: 4,
+                          bottom: 4,
+                          child: CircleAvatar(
+                            radius: 16,
+                            backgroundColor: Colors.black54,
+                            child: IconButton(
+                              padding: EdgeInsets.zero,
+                              icon:
+                                  const Icon(Icons.edit, size: 18, color: Colors.white),
+                              onPressed: pickAvatar,
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   Text(
@@ -237,43 +266,25 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                     ),
                   ),
                   const SizedBox(height: 30),
-                  buildTextField("Name", nameController),
-                  buildTextField("Email", EmailController),
-                  buildTextField("Ghana Card Number", GhanaCardController),
-                  const SizedBox(height: 20),
-
-                   if (showSave)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: saveChanges,
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                        child: const Text("Save", style: TextStyle(color: Colors.white)),
-                      ),
-                    ),
+                  buildTextField("Name", nameController, !isEditing),
+                  buildTextField("Email", emailController, !isEditing),
+                  buildTextField(
+                      "Ghana Card Number", ghanaCardController, !isEditing),
                   const SizedBox(height: 30),
-
                   SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: ()async {
-                          await FirebaseAuth.instance.signOut();
-                         
-
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> LoginPage()));
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Sign Out Successful"), behavior: SnackBarBehavior.floating,backgroundColor: Colors.green, ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                        child: const Text("Log - out ", style: TextStyle(color: Colors.white)),
-                      ),
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        await FirebaseAuth.instance.signOut();
+                        Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (_) => GetStartedPage1()));
+                      },
+                      style:
+                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      child: const Text("Log out", style: TextStyle(color: Colors.white),),
                     ),
-
-                 
+                  ),
                 ],
               ),
             ),

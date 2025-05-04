@@ -59,15 +59,11 @@ void initState() {
 
       ImageProvider avatarImage;
     if (userProvider.avatarPath != null && userProvider.avatarPath!.isNotEmpty) {
-      // if it's a URL
-    
-
-        // or if it's an asset identifier
         avatarImage = AssetImage(userProvider.avatarPath!);
-      
+     
     } else {
       // fallback
-      avatarImage = const AssetImage("assets/img/Avatar.png");
+      avatarImage =  AssetImage("assets/img/Avatar.png");
     }
  
     return Drawer(

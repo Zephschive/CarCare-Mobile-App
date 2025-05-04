@@ -2,9 +2,11 @@ import 'package:carcare/common_widgets/RectangularbuttonColor.dart';
 import 'package:carcare/pages/Homepage.dart';
 import 'package:carcare/pages/Navigator_Page.dart';
 import 'package:carcare/pages/SignupPage.dart';
+import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:carcare/common_widgets/common_widgets.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
@@ -35,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
       // Show success message & navigate
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Login successful!"),
+          content: const Text("Login successful!", style: TextStyle(color: Colors.white),),
           backgroundColor: Colors.green,
         ),
       );
@@ -60,6 +62,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+      bool isDark = Provider.of<ThemeProvider>(context).isDarkMode;
     return Scaffold(
       backgroundColor: CCcolours.whiteBackground2,
       body: Padding(
@@ -73,12 +76,12 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 80),
                 Image.asset(CarCareImages.CarCareLogo, height: 80),
                 const SizedBox(height: 20),
-                const Text(
+                 Text(
                   "Welcome back!",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? Colors.black :Colors.black ),
                 ),
                 const SizedBox(height: 10),
-                const Text("Enter your details below to log into your account"),
+                 Text("Enter your details below to log into your account" , style: TextStyle(color: isDark ? Colors.grey :Colors.grey ),),
                 const SizedBox(height: 20),
 
                 // Email Field
@@ -121,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () {
                       // Handle forgot password
                     },
-                    child: const Text("Forgot your password?"),
+                    child: Text("Forgot your password?" ,style: TextStyle(color: isDark ? Colors.purple :Colors.purple),),
                   ),
                 ),
 

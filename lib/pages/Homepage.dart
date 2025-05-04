@@ -98,27 +98,29 @@ void _deleteCar(int index) async {
   });
 }
 
-void _showReminderDetailsDialog(Map<String, dynamic> reminder) {
+void _showReminderDetailsDialog(Map<String, dynamic> reminder, bool isDark) {
   showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text(reminder['title'] ?? 'Reminder'),
+        backgroundColor: isDark ? Colors.white : Colors.black87,
+        title: Text(reminder['title'] ?? 'Reminder', style: TextStyle( color: isDark ? Colors.black : Colors.white),),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("📅 Date: ${reminder['date']}"),
-            Text("⏰ Time: ${reminder['time']}"),
+            Text("📅 Date: ${reminder['date']}",style: TextStyle( color: isDark ? Colors.black : Colors.white)),
+            Text("⏰ Time: ${reminder['time']}",style: TextStyle( color: isDark ? Colors.black : Colors.white)),
             const SizedBox(height: 10),
-            Text("📝 Description:"),
-            Text(reminder['desc'] ?? '', style: const TextStyle(fontWeight: FontWeight.w400)),
+            Text("📝 Description:",style: TextStyle( color: isDark ? Colors.black : Colors.white)),
+            Text(reminder['desc'] ?? '', style:  TextStyle(fontWeight: FontWeight.w400,color: isDark ? Colors.black : Colors.white)),
           ],
         ),
         actions: [
           TextButton(
+         
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Close"),
+            child:  Text("Close", style: TextStyle(color: isDark ? Colors.black : Colors.white),),
           ),
         ],
       );
@@ -323,82 +325,96 @@ Future<void> _loadUpcomingReminders() async {
               ),
             ),
     
+          
             // Upcoming Reminders Section
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration:  BoxDecoration(
-                color: (isDark ? Colors.white : Colors.black87),
-                
-                boxShadow: [
-                  BoxShadow(
-                    color: (isDark ? Colors.black12 : Colors.white24),
-                    blurRadius: 5,
-                    offset: Offset(0, -3),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Upcoming Reminders",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
-                    color: (isDark ? Colors.black : Colors.white)
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                 SizedBox(
-      height: 80,
-      child: _upcomingReminders.isEmpty
-      ? Center(child: Text("No upcoming reminders at the moment.", style: 
-          TextStyle(
-            color: (isDark ? Colors.black : Colors.white),
-          )
-      
-      ))
-      : ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: _upcomingReminders.length,
-          itemBuilder: (context, index) {
-            final reminder = _upcomingReminders[index];
-            return Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: GestureDetector(
-                onTap: (){
-                  _showReminderDetailsDialog(_upcomingReminders[index]);
-                },
-                child: Container(
-                  width: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: (isDark ? Colors.white : Colors.black87),
-                    border: Border.all(color: const Color(0xFFB3B2B2)),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 3,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.notifications, color: Colors.red),
-                      const SizedBox(height: 5),
-                      Text(reminder['title'] ?? '', textAlign: TextAlign.center, style: TextStyle(
-                        color: (isDark ? Colors.black : Colors.white),
-                      ),),
-                    ],
+Container(
+  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+  decoration: BoxDecoration(
+    color: (isDark ? Colors.white : Colors.black87),
+    boxShadow: [
+      BoxShadow(
+        color: (isDark ? Colors.black12 : Colors.white24),
+        blurRadius: 5,
+        offset: Offset(0, -3),
+      ),
+    ],
+  ),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        "Upcoming Reminders",
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: (isDark ? Colors.black : Colors.white),
+        ),
+      ),
+      const SizedBox(height: 10),
+      SizedBox(
+        height: 80,
+        child: _upcomingReminders.isEmpty
+            ? Center(
+                child: Text(
+                  "No upcoming reminders at the moment.",
+                  style: TextStyle(
+                    color: (isDark ? Colors.black : Colors.white),
                   ),
                 ),
+              )
+            : ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: _upcomingReminders.length,
+                itemBuilder: (context, index) {
+                  final reminder = _upcomingReminders[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showReminderDetailsDialog(reminder, isDark);
+                      },
+                      child: Container(
+                        width: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: (isDark ? Colors.white : Colors.black87),
+                          border: Border.all(color: const Color(0xFFB3B2B2)),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 3,
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.notifications, color: Colors.red),
+                            const SizedBox(height: 5),
+                            Text(
+                              reminder['title'] ?? '',
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: (isDark ? Colors.black : Colors.white),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
-    ),
+      ),
     ],
-              ),
-            ),
+  ),
+),
+
     
             // Daily Tips Section
             Container(

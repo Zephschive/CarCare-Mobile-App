@@ -130,7 +130,7 @@ class GetStartedPage2 extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
                     child: Text("Next", style: GoogleFonts.karla(
-                      fontSize: 20, fontWeight: FontWeight.w800
+                      fontSize: 20, fontWeight: FontWeight.w800, color: Colors.black
                     ),),
                   ),
                 ),

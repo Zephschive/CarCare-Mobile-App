@@ -1,4 +1,6 @@
+import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MyInputField extends StatefulWidget {
   final String label;
@@ -13,7 +15,7 @@ class MyInputField extends StatefulWidget {
     required this.hintText,
     required this.controller,
     this.isPassword = false,
-    this.validator, // Accept custom validator
+    this.validator,
   }) : super(key: key);
 
   @override
@@ -26,9 +28,9 @@ class _CustomInputFieldState extends State<MyInputField> {
   void validateInput(String value) {
     setState(() {
       if (widget.validator != null) {
-        errorText = widget.validator!(value); // Use custom validator
+        errorText = widget.validator!(value);
       } else {
-        errorText = _defaultValidator(value); // Use default validation
+        errorText = _defaultValidator(value);
       }
     });
   }
@@ -42,36 +44,43 @@ class _CustomInputFieldState extends State<MyInputField> {
 
   @override
   Widget build(BuildContext context) {
+    // We’ll keep the input & error text always dark, for readability.
+    final textColor = Colors.black;
+    final errorColor = Colors.red.shade700;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           widget.label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Colors.black,
+            color: textColor,
           ),
         ),
         const SizedBox(height: 5),
         TextField(
           controller: widget.controller,
           obscureText: widget.isPassword,
-          onChanged: validateInput, // Validate on text change
+          onChanged: validateInput,
+          style: TextStyle(color: textColor),            // force input text color
           decoration: InputDecoration(
             hintText: widget.hintText,
-            errorText: errorText, // Show error message
+            hintStyle: TextStyle(color: textColor.withOpacity(0.5)),
+            errorText: errorText,
+            errorStyle: TextStyle(color: errorColor),    // force error text color
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFFB3B2B2)), // Custom border color
+              borderSide: BorderSide(color: textColor.withOpacity(0.4)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFFB3B2B2)), // Default border color
+              borderSide: BorderSide(color: textColor.withOpacity(0.4)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.blue, width: 2), // Highlighted border
+              borderSide: BorderSide(color: Colors.blue, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           ),

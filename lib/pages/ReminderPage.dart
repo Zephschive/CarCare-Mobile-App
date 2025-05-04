@@ -223,7 +223,7 @@ class _ReminderPageState extends State<ReminderPage> {
                       'reminders': FieldValue.arrayUnion([updatedReminder])
                     });
                   }
-                  Navigator.of(context).pop();
+                 
                   Navigator.of(context).pop();
                 },
                 child: const Text('Save'),
@@ -263,7 +263,7 @@ class _ReminderPageState extends State<ReminderPage> {
           children: [
             SizedBox(
               width: 60,
-              child: Text(e.key, style: const TextStyle(fontWeight: FontWeight.bold)),
+              child: Text(e.key, style: const TextStyle(fontWeight: FontWeight.bold , color: Colors.grey )),
             ),
             Container(
               width: 6,
@@ -286,7 +286,7 @@ class _ReminderPageState extends State<ReminderPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(r['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text(r['title'], style: const TextStyle(fontWeight: FontWeight.bold ,color:Colors.black )),
                           const SizedBox(height: 4),
                           Text(r['desc'], style: const TextStyle(fontSize: 12, color: Colors.black54)),
                         ],
@@ -335,34 +335,63 @@ class _ReminderPageState extends State<ReminderPage> {
               ),
               const SizedBox(height: 10),
               TableCalendar(
-                focusedDay: _focusedDay,
-                firstDay: DateTime.utc(2020, 1, 1),
-                lastDay: DateTime.utc(2030, 12, 31),
-                selectedDayPredicate: (d) => isSameDay(d, _selectedDay),
-                onDaySelected: (d, f) => setState(() { _selectedDay = d; _focusedDay = f; }),
-                calendarFormat: CalendarFormat.month,
-                headerStyle: HeaderStyle(
-                  leftChevronIcon: Icon(Icons.chevron_left, color: isDark ? Colors.black : Colors.white),
-                  rightChevronIcon: Icon(Icons.chevron_right, color: isDark ? Colors.black : Colors.white),
-                  titleTextStyle: TextStyle(color: isDark ? Colors.black : Colors.white),
-                ),
-                daysOfWeekStyle: DaysOfWeekStyle(
-                  weekdayStyle: TextStyle(color: isDark ? Colors.black : Colors.white),
-                  decoration: BoxDecoration(color: isDark ? Colors.white : Colors.black),
-                ),
-                calendarStyle: CalendarStyle(
-                  defaultTextStyle: TextStyle(color: isDark ? Colors.black : Colors.white),
-                  todayDecoration: BoxDecoration(
-                    color: Colors.transparent,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.black),
-                  ),
-                  selectedDecoration: BoxDecoration(
-                    color: Colors.blue.shade200,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
+  focusedDay: _focusedDay,
+  firstDay: DateTime.utc(2020, 1, 1),
+  lastDay: DateTime.utc(2030, 12, 31),
+  selectedDayPredicate: (d) => isSameDay(d, _selectedDay),
+  onDaySelected: (d, f) => setState(() {
+    _selectedDay = d;
+    _focusedDay = f;
+  }),
+  calendarFormat: CalendarFormat.month,
+  headerStyle: HeaderStyle(
+    // show the format toggle (“2 weeks” / “Month”) 
+    formatButtonVisible: true,
+
+    // style the format button background & text
+    formatButtonDecoration: BoxDecoration(
+      color: isDark ? Colors.white : Colors.black,
+      borderRadius: BorderRadius.circular(6),
+    ),
+    formatButtonTextStyle: TextStyle(
+      color: isDark ? Colors.black : Colors.white,
+      fontSize: 12,
+      fontWeight: FontWeight.bold,
+    ),
+
+    leftChevronIcon: Icon(Icons.chevron_left, color: isDark ? Colors.black : Colors.white),
+    rightChevronIcon: Icon(Icons.chevron_right, color: isDark ? Colors.black : Colors.white),
+    titleTextStyle: TextStyle(color: isDark ? Colors.black : Colors.white),
+    titleCentered: true,
+  ),
+  daysOfWeekStyle: DaysOfWeekStyle(
+    weekdayStyle: TextStyle(color: isDark ? Colors.black : Colors.white),
+    decoration: BoxDecoration(color: isDark ? Colors.white : Colors.black),
+  ),
+  calendarStyle: CalendarStyle(
+    defaultTextStyle: TextStyle(color: isDark ? Colors.black : Colors.white),
+
+    // when “today”
+    todayDecoration: BoxDecoration(
+      color: Colors.transparent,
+      shape: BoxShape.circle,
+      border: Border.all(color: Colors.black),
+    ),
+
+    // your selected‐day circle
+    selectedDecoration: BoxDecoration(
+      color: Colors.blue.shade200,
+      shape: BoxShape.circle,
+    ),
+
+    // ensure the number inside selected day is visible
+    selectedTextStyle: TextStyle(
+      color: Colors.white,        // white on your blue circle
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+)
+,
               const SizedBox(height: 16),
               StreamBuilder<DocumentSnapshot>(
                 stream: _firestore.collection('users').doc(_auth.currentUser!.uid).snapshots(),
@@ -385,7 +414,7 @@ class _ReminderPageState extends State<ReminderPage> {
                       children: [
                         Text(
                           'Time: ${DateFormat('hh:mm a').format(DateTime.now())} • ${reminders.length} reminder(s)',
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey),
                         ),
                         const SizedBox(height: 8),
                         if (reminders.isEmpty)

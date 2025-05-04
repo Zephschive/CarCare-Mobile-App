@@ -1,7 +1,7 @@
+import 'package:carcare/common_widgets/Navigation_Menu.dart';
 import 'package:carcare/theme_provider/themeprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:carcare/common_widgets/common_widgets.dart';
 import 'package:provider/provider.dart';
 
 class MaintenanceTipsPage extends StatefulWidget {
@@ -16,7 +16,7 @@ class _MaintenanceTipsPageState extends State<MaintenanceTipsPage> {
   final TextEditingController _searchController = TextEditingController();
   String selectedCategory = 'All';
 
-  final List<Map<String, String>> allTips = [
+ final List<Map<String, String>> allTips = [
   // Tires
   {"title": "Rotate Tires", "description": "Rotate every 5,000–7,500 miles to promote even wear.", "category": "Tires"},
   {"title": "Check Tire Pressure", "description": "Monthly tire pressure checks improve safety and mileage.", "category": "Tires"},
@@ -152,63 +152,122 @@ class _MaintenanceTipsPageState extends State<MaintenanceTipsPage> {
   {"title": "Consult a Mechanic", "description": "For codes you can’t fix yourself.", "category": "Diagnostics"},
 ];
 
-
   List<Map<String, String>> get filteredTips {
-    final searchText = _searchController.text.toLowerCase();
+    final search = _searchController.text.toLowerCase();
     return allTips.where((tip) {
-      final matchesSearch = tip['title']!.toLowerCase().contains(searchText) ||
-          tip['description']!.toLowerCase().contains(searchText);
-      final matchesCategory = selectedCategory == 'All' || tip['category'] == selectedCategory;
+      final matchesSearch = tip['title']!.toLowerCase().contains(search)
+        || tip['description']!.toLowerCase().contains(search);
+      final matchesCategory = selectedCategory == 'All'
+        || tip['category'] == selectedCategory;
       return matchesSearch && matchesCategory;
     }).toList();
+  }
+
+  void _showTipDetail(Map<String, String> tip, bool isDark) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: isDark ? Colors.white : Colors.black87,
+        insetPadding: const EdgeInsets.all(20),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                tip['title']!,
+                style: GoogleFonts.karla(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.black : Colors.white,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                tip['description']!,
+                style: GoogleFonts.karla(
+                  fontSize: 16,
+                  color: isDark ? Colors.black87 : Colors.white70,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    "CLOSE",
+                    style: TextStyle(
+                      color: isDark ? Colors.blue : Colors.lightBlueAccent,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     bool isDark = Provider.of<ThemeProvider>(context).isDarkMode;
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: isDark ? Colors.white : Colors.black87,
       drawer: SideMenuDrawer(selectedIndex: selectedIndex),
       appBar: AppBar(
         backgroundColor: isDark ? Colors.blue : Colors.black87,
-        title: Text("Maintenance Tips",
-            style: GoogleFonts.karla(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(
+          "Maintenance Tips",
+          style: GoogleFonts.karla(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         leading: IconButton(
-          icon: Icon(Icons.menu, color: isDark ? Colors.black : Colors.white),
+          icon: Icon(Icons.menu, color: Colors.white),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            // Search + Filter row
             Row(
-  children: [
-    Expanded(
-      child: TextField(
-        style: TextStyle(color: isDark ? Colors.black : Colors.white ),
-        controller: _searchController,
-        onChanged: (_) => setState(() {}),
-        decoration: InputDecoration(
-          
-          hintText: "Search maintenance tips",
-          hintStyle: GoogleFonts.lexendDeca(
-              color: isDark ? Colors.grey : Colors.white),
-          prefixIcon: Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      ),
-    ),
-    const SizedBox(width: 10),
-    PopupMenuButton<String>(
-      icon: Icon(Icons.filter_list, color: isDark ? Colors.black : Colors.white),
-      color: isDark ? Colors.white : Colors.black87,
-      onSelected: (value) => setState(() => selectedCategory = value),
-      itemBuilder: (context) => [
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (_) => setState(() {}),
+                    style: TextStyle(color: isDark ? Colors.black : Colors.white),
+                    decoration: InputDecoration(
+                      hintText: "Search tips",
+                      hintStyle: GoogleFonts.lexendDeca(
+                        color: isDark ? Colors.grey : Colors.white70,
+                      ),
+                      prefixIcon: Icon(Icons.search, color: isDark ? Colors.black : Colors.white),
+                      filled: true,
+                      fillColor: isDark ? Colors.grey[100] : Colors.grey[900],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                PopupMenuButton<String>(
+                  icon: Icon(Icons.filter_list, color: isDark ? Colors.black : Colors.white),
+                  color: isDark ? Colors.white : Colors.black87,
+                  onSelected: (value) => setState(() => selectedCategory = value),
+                  itemBuilder: (_) => [
         "All",
         "Tires",
         "Fluids",
@@ -229,56 +288,66 @@ class _MaintenanceTipsPageState extends State<MaintenanceTipsPage> {
         "Belts & Hoses",
         "Electrical",
         "Diagnostics"
-      ]
-          .map((cat) => PopupMenuItem(
-                value: cat,
-                child: Text(
-                  cat,
-                  style: TextStyle(
-                    color: isDark ? Colors.black : Colors.white,
-                  ),
+      ].map((cat) {
+                    return PopupMenuItem(
+                      value: cat,
+                      child: Text(cat, style: TextStyle(color: isDark ? Colors.black : Colors.white)),
+                    );
+                  }).toList(),
                 ),
-              ))
-          .toList(),
-    )
-  ],
-),
-            const SizedBox(height: 15),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // Tips list
             Expanded(
               child: ListView.builder(
                 itemCount: filteredTips.length,
-                itemBuilder: (context, index) {
-                  final tip = filteredTips[index];
-                  return Card(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    color: isDark ? Colors.white : Colors.black87,
-                    child: ListTile(
-                      title: Text(
-                        tip["title"]!,
-                        style: GoogleFonts.karla(
-                          color: Colors.blue,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                itemBuilder: (context, i) {
+                  final tip = filteredTips[i];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () => _showTipDetail(tip, isDark),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.grey[200] : Colors.grey[800],
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isDark ? Colors.black12 : Colors.black54,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            )
+                          ],
                         ),
-                      ),
-                      subtitle: Text(
-                        tip["description"]!,
-                        style: GoogleFonts.karla(
-                          fontSize: 14,
-                          color: isDark ? Colors.grey : Colors.white,
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          title: Text(
+                            tip['title']!,
+                            style: GoogleFonts.karla(
+                              color: isDark ? Colors.black87 : Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: Text(
+                            tip['description']!,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.karla(
+                              color: isDark ? Colors.black54 : Colors.white70,
+                            ),
+                          ),
+                          trailing: Icon(Icons.chevron_right, color: isDark ? Colors.black54 : Colors.white70),
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   );
                 },
               ),
             ),
-            const SizedBox(height: 15),
           ],
         ),
       ),
