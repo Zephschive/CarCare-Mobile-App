@@ -35,8 +35,10 @@ class _SideMenuDrawerState extends State<SideMenuDrawer> {
 void initState() {
   super.initState();
 
-  final userProvider = Provider.of<UserProvider>(context, listen: false);
-  userProvider.fetchUserDetails();
+   Future.microtask(() {
+    Provider.of<UserProvider>(context, listen: false).fetchUserDetails();
+   
+  });
     WidgetsBinding.instance.addPostFrameCallback((_) {
     Provider.of<UserProvider>(context, listen: false);
   });

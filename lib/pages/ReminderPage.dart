@@ -7,9 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
-
 class ReminderPage extends StatefulWidget {
-  const ReminderPage({super.key});
+  const ReminderPage({Key? key}) : super(key: key);
 
   @override
   State<ReminderPage> createState() => _ReminderPageState();
@@ -19,32 +18,14 @@ class _ReminderPageState extends State<ReminderPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   int selectedIndex = 3;
-  Color _selectedColor = Colors.green.shade100;
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  DateTime _parseTime(String timeStr) {
-  final now = DateTime.now();
-  final format = DateFormat.jm(); // e.g., 1:00 PM
-  return format.parse(timeStr);
-}
-
-
-Future<void> _deleteReminder(Map<String, dynamic> reminder) async {
-  final user = _auth.currentUser;
-  if (user == null) return;
-
-  final userDoc = _firestore.collection("users").doc(user.uid);
-
-  await userDoc.update({
-    "reminders": FieldValue.arrayRemove([reminder])
-  });
-
-  Navigator.of(context).pop();
-  Navigator.of(context).pop();
-  
-}
-
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descController = TextEditingController();
+  TimeOfDay _selectedTime = TimeOfDay.now();
 
   @override
   void dispose() {
@@ -53,207 +34,228 @@ Future<void> _deleteReminder(Map<String, dynamic> reminder) async {
     super.dispose();
   }
 
+  Future<void> _deleteReminder(Map<String, dynamic> reminder) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
 
-  final Map<String, List<Map<String, dynamic>>> _reminders = {
-    "2025-04-12": [
-      {
-        "time": "10:00 AM",
-        "title": "Insurance Renewal",
-        "desc": "Your insurance will be..",
-        "color": Colors.blue,
-      },
-      {
-        "time": "1:00 PM",
-        "title": "Insurance Renewal Reminder",
-        "desc": "Please don't forget to renew it",
-        "color": Colors.red.shade100,
-      },
-      {
-        "time": "1:00 PM",
-        "title": "Urgent Insurance Renewal",
-        "desc": "Consider updating your policy",
-        "color": Colors.red.shade100,
-      },
-      {
-        "time": "4:00 PM",
-        "title": "Renewal Notification",
-        "desc": "Protect yourself and your car",
-        "color": Colors.yellow.shade100,
-      },
-      {
-        "time": "4:00 PM",
-        "title": "Insurance Renewal Alert",
-        "desc": "Stay secure and renew now",
-        "color": Colors.yellow.shade100,
-      },
-    ]
-  };
+    final userDoc = _firestore.collection('users').doc(user.uid);
+    await userDoc.update({
+      'reminders': FieldValue.arrayRemove([reminder])
+    });
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descController = TextEditingController();
-  TimeOfDay _selectedTime = TimeOfDay.now();
+    Navigator.of(context).pop(); // close detail dialog
 
-  @override
-  Widget build(BuildContext context) {
-    String selectedKey = (_selectedDay ?? _focusedDay).toIso8601String().substring(0, 10);
+  }
 
-    bool isDark = Provider.of<ThemeProvider>(context).isDarkMode;
-    final dayReminders = _reminders[selectedKey] ?? [];
-
-    return Scaffold(
-      drawer: SideMenuDrawer(selectedIndex: selectedIndex),
-      key: _scaffoldKey,
-      backgroundColor: isDark ? Colors.white : Colors.black87 ,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: isDark? Colors.black : Colors.white),
-          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                DateFormat('MMMM d, y').format(_focusedDay),
-                style: TextStyle(fontSize: 16, color: isDark ? Colors.black : Colors.white),
-              ),
-              Text("Today’s Reminder", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? Colors.black : Colors.white)),
-              SizedBox(height: 10),
-
-              TableCalendar(
-
-                headerStyle: HeaderStyle(
-                    leftChevronIcon: Icon(
-                    Icons.chevron_left,
-                    color: isDark ? Colors.black : Colors.white,
-    ),
-
-                  rightChevronIcon: Icon(
-                    Icons.chevron_right,
-                    color: isDark ? Colors.black : Colors.white,
-    ) ,
-                   decoration: BoxDecoration(),
-                   titleTextStyle: TextStyle(
-                    color:  isDark ? Colors.black : Colors.white
-                   )
-                ),
-                daysOfWeekStyle:  DaysOfWeekStyle(
-                  weekdayStyle: TextStyle(
-                    color: isDark?  Colors.black:  Colors.white
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.white: Colors.black 
-
-                  )
-                ),
-              availableCalendarFormats:  {
-                   CalendarFormat.month: 'Month',
-
-              },
-                focusedDay: _focusedDay,
-                firstDay: DateTime.utc(2020, 1, 1),
-                lastDay: DateTime.utc(2030, 12, 31),
-                calendarFormat: CalendarFormat.month,
-                
-                selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDay = selectedDay;
-                    _focusedDay = focusedDay;
-                  });
-                },
-                calendarStyle: CalendarStyle(
-                  defaultTextStyle: TextStyle(
-                    color:  isDark ? Colors.black : Colors.white
-                  ) ,
-                  todayDecoration: BoxDecoration(
-                    color: Colors.transparent,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.black),
-                  ),
-                  selectedDecoration: BoxDecoration(
-                    color: Colors.blue.shade200,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              StreamBuilder<DocumentSnapshot>(
-  stream: _firestore
-      .collection("users")
-      .doc(_auth.currentUser!.uid)
-      .snapshots(),
-  builder: (context, snapshot) {
-    List<Map<String, dynamic>> reminders = [];
-
-    if (snapshot.hasData && snapshot.data!.exists) {
-
-
-      final selectedDate = (_selectedDay ?? _focusedDay).toIso8601String().substring(0, 10);
-final items = (snapshot.data!["reminders"] as List?)
-    ?.where((reminder) => reminder["date"] == selectedDate)
-    .toList() ?? [];
-    reminders = items.cast<Map<String, dynamic>>();
-
-    }
-
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.blue.shade50,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Time: ${DateFormat('hh:mm a').format(DateTime.now())} • ${reminders.length} reminder(s)",
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+  void _showReminderDetail(Map<String, dynamic> reminder) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(reminder['title']),
+        content: Text(reminder['desc']),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _showEditReminderDialog(reminder);
+            },
+            child: const Text('Edit'),
           ),
-          SizedBox(height: 8),
-          if (reminders.isEmpty)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 40),
-                child: Text(
-                  "No reminders at the moment",
-                  style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.grey),
-                ),
-              ),
-            )
-          else
-            ..._buildTimeline(reminders),
+          TextButton(
+            onPressed: () => _deleteReminder(reminder),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
         ],
       ),
     );
-  },
-),
-              SizedBox(height: 80),
+  }
+
+  void _showAddReminderDialog() {
+    _titleController.clear();
+    _descController.clear();
+    _selectedTime = TimeOfDay.now();
+    Color selectedColor = Colors.green.shade100;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Add Reminder'),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(labelText: 'Title'),
+                  ),
+                  TextField(
+                    controller: _descController,
+                    decoration: const InputDecoration(labelText: 'Description'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final picked = await showTimePicker(
+                        context: context,
+                        initialTime: _selectedTime,
+                      );
+                      if (picked != null) {
+                        setState(() => _selectedTime = picked);
+                      }
+                    },
+                    child: Text('Pick Time: ${_selectedTime.format(context)}'),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 10,
+                    children: [
+                      _buildColorCircle(Colors.green.shade100, selectedColor, (c) => setState(() => selectedColor = c)),
+                      _buildColorCircle(Colors.blue.shade100, selectedColor, (c) => setState(() => selectedColor = c)),
+                      _buildColorCircle(Colors.red.shade100, selectedColor, (c) => setState(() => selectedColor = c)),
+                      _buildColorCircle(Colors.yellow.shade100, selectedColor, (c) => setState(() => selectedColor = c)),
+                      _buildColorCircle(Colors.purple.shade100, selectedColor, (c) => setState(() => selectedColor = c)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  final user = _auth.currentUser;
+                  if (user != null) {
+                    final reminder = {
+                      'title': _titleController.text,
+                      'desc': _descController.text,
+                      'time': _selectedTime.format(context),
+                      'color': selectedColor.value,
+                      'date': (_selectedDay ?? _focusedDay).toIso8601String().substring(0, 10),
+                    };
+                    final userDoc = _firestore.collection('users').doc(user.uid);
+                    await userDoc.update({
+                      'reminders': FieldValue.arrayUnion([reminder])
+                    }).catchError((_) async {
+                      await userDoc.set({'reminders': [reminder]});
+                    });
+                  }
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Save'),
+              ),
             ],
-          ),
-        ),
+          );
+        },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddReminderDialog,
-        child: Icon(Icons.add),
+    );
+  }
+
+  void _showEditReminderDialog(Map<String, dynamic> oldReminder) {
+    _titleController.text = oldReminder['title'];
+    _descController.text = oldReminder['desc'];
+    final parts = oldReminder['time'].split(RegExp(r'[: ]'));
+    final hour = int.parse(parts[0]) % 12 + (parts[2] == 'PM' ? 12 : 0);
+    final minute = int.parse(parts[1]);
+    _selectedTime = TimeOfDay(hour: hour, minute: minute);
+    Color selectedColor = Color(oldReminder['color']);
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Edit Reminder'),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(labelText: 'Title'),
+                  ),
+                  TextField(
+                    controller: _descController,
+                    decoration: const InputDecoration(labelText: 'Description'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final picked = await showTimePicker(
+                        context: context,
+                        initialTime: _selectedTime,
+                      );
+                      if (picked != null) setState(() => _selectedTime = picked);
+                    },
+                    child: Text('Pick Time: ${_selectedTime.format(context)}'),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 10,
+                    children: [
+                      _buildColorCircle(Colors.green.shade100, selectedColor, (c) => setState(() => selectedColor = c)),
+                      _buildColorCircle(Colors.blue.shade100, selectedColor, (c) => setState(() => selectedColor = c)),
+                      _buildColorCircle(Colors.red.shade100, selectedColor, (c) => setState(() => selectedColor = c)),
+                      _buildColorCircle(Colors.yellow.shade100, selectedColor, (c) => setState(() => selectedColor = c)),
+                      _buildColorCircle(Colors.purple.shade100, selectedColor, (c) => setState(() => selectedColor = c)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  final user = _auth.currentUser;
+                  if (user != null) {
+                    final updatedReminder = {
+                      'title': _titleController.text,
+                      'desc': _descController.text,
+                      'time': _selectedTime.format(context),
+                      'color': selectedColor.value,
+                      'date': (_selectedDay ?? _focusedDay).toIso8601String().substring(0, 10),
+                    };
+                    final userDoc = _firestore.collection('users').doc(user.uid);
+                    await userDoc.update({
+                      'reminders': FieldValue.arrayRemove([oldReminder])
+                    });
+                    await userDoc.update({
+                      'reminders': FieldValue.arrayUnion([updatedReminder])
+                    });
+                  }
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildColorCircle(Color color, Color selected, ValueChanged<Color> onTap) {
+    return GestureDetector(
+      onTap: () => onTap(color),
+      child: Container(
+        width: 30,
+        height: 30,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+          border: selected == color ? Border.all(color: Colors.black, width: 2) : null,
+        ),
       ),
     );
   }
 
   List<Widget> _buildTimeline(List<Map<String, dynamic>> reminders) {
-    Map<String, List<Map<String, dynamic>>> grouped = {};
-
-    for (var item in reminders) {
-      grouped.putIfAbsent(item['time'], () => []).add(item);
+    final grouped = <String, List<Map<String, dynamic>>>{};
+    for (var r in reminders) {
+      grouped.putIfAbsent(r['time'], () => []).add(r);
     }
-
-    return grouped.entries.map((entry) {
+    return grouped.entries.map((e) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 20),
         child: Row(
@@ -261,32 +263,32 @@ final items = (snapshot.data!["reminders"] as List?)
           children: [
             SizedBox(
               width: 60,
-              child: Text(entry.key, style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Text(e.key, style: const TextStyle(fontWeight: FontWeight.bold)),
             ),
             Container(
-              width: 6.0 , 
-              height: 65.0 * entry.value.length,
-              color: Color(entry.value.first['color']),
+              width: 6,
+              height: 65 * e.value.length.toDouble(),
+              color: Color(e.value.first['color']),
               margin: const EdgeInsets.symmetric(horizontal: 8),
             ),
             Expanded(
               child: Column(
-                children: entry.value.map((reminderss) {
+                children: e.value.map((r) {
                   return GestureDetector(
-                    onTap: () => _showReminderDetail(reminderss),
+                    onTap: () => _showReminderDetail(r),
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Color(reminderss['color']),
+                        color: Color(r['color']),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(reminderss['title'], style: TextStyle(fontWeight: FontWeight.bold)),
-                          SizedBox(height: 4),
-                          Text(reminderss['desc'], style: TextStyle(fontSize: 12, color: Colors.black54)),
+                          Text(r['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 4),
+                          Text(r['desc'], style: const TextStyle(fontSize: 12, color: Colors.black54)),
                         ],
                       ),
                     ),
@@ -300,210 +302,118 @@ final items = (snapshot.data!["reminders"] as List?)
     }).toList();
   }
 
-  void _showReminderDetail(Map<String, dynamic> reminder) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(reminder['title']),
-      content: Text(reminder['desc'].toString()),
-      actions: [
-        TextButton(
-          onPressed: () => _showEditReminderDialog(reminder),
-          child: Text("Edit"),
-        ),
-        TextButton(
-          onPressed: () => _deleteReminder(reminder),
-          child: Text("Delete", style: TextStyle(color: Colors.red)),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text("Close"),
-        )
-      ],
-    ),
-  );
-}
+  @override
+  Widget build(BuildContext context) {
+    final selectedKey = (_selectedDay ?? _focusedDay).toIso8601String().substring(0, 10);
+    final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
 
- void _showAddReminderDialog() {
-    _titleController.clear();
-    _descController.clear();
-    _selectedTime = TimeOfDay.now();
-    Color selectedColor = Colors.green.shade100;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text("Add Reminder"),
-              content: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    TextField(controller: _titleController, decoration: InputDecoration(labelText: "Title")),
-                    TextField(controller: _descController, decoration: InputDecoration(labelText: "Description")),
-                    ElevatedButton(
-                      onPressed: () async {
-                        TimeOfDay? picked = await showTimePicker(
-                          context: context,
-                          initialTime: _selectedTime,
-                        );
-                        if (picked != null) {
-                          setState(() {
-                            _selectedTime = picked;
-                          });
-                        }
-                      },
-                      child: Text("Pick Time: ${_selectedTime.format(context)}"),
-                    ),
-                    Wrap(
-                      spacing: 10,
-                      children: [
-                        _buildColorCircle(Colors.green.shade100, selectedColor, (color) => setState(() => selectedColor = color)),
-                        _buildColorCircle(Colors.blue.shade100, selectedColor, (color) => setState(() => selectedColor = color)),
-                        _buildColorCircle(Colors.red.shade100, selectedColor, (color) => setState(() => selectedColor = color)),
-                        _buildColorCircle(Colors.yellow.shade100, selectedColor, (color) => setState(() => selectedColor = color)),
-                        _buildColorCircle(Colors.purple.shade100, selectedColor, (color) => setState(() => selectedColor = color)),
-                      ],
-                    )
-                  ],
+    return Scaffold(
+      key: _scaffoldKey,
+      drawer: SideMenuDrawer(selectedIndex: selectedIndex),
+      backgroundColor: isDark ? Colors.white : Colors.black87,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          icon: Icon(Icons.menu, color: isDark ? Colors.black : Colors.white),
+          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                DateFormat('MMMM d, y').format(_focusedDay),
+                style: TextStyle(fontSize: 16, color: isDark ? Colors.black : Colors.white),
+              ),
+              Text(
+                "Today’s Reminder",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? Colors.black : Colors.white),
+              ),
+              const SizedBox(height: 10),
+              TableCalendar(
+                focusedDay: _focusedDay,
+                firstDay: DateTime.utc(2020, 1, 1),
+                lastDay: DateTime.utc(2030, 12, 31),
+                selectedDayPredicate: (d) => isSameDay(d, _selectedDay),
+                onDaySelected: (d, f) => setState(() { _selectedDay = d; _focusedDay = f; }),
+                calendarFormat: CalendarFormat.month,
+                headerStyle: HeaderStyle(
+                  leftChevronIcon: Icon(Icons.chevron_left, color: isDark ? Colors.black : Colors.white),
+                  rightChevronIcon: Icon(Icons.chevron_right, color: isDark ? Colors.black : Colors.white),
+                  titleTextStyle: TextStyle(color: isDark ? Colors.black : Colors.white),
+                ),
+                daysOfWeekStyle: DaysOfWeekStyle(
+                  weekdayStyle: TextStyle(color: isDark ? Colors.black : Colors.white),
+                  decoration: BoxDecoration(color: isDark ? Colors.white : Colors.black),
+                ),
+                calendarStyle: CalendarStyle(
+                  defaultTextStyle: TextStyle(color: isDark ? Colors.black : Colors.white),
+                  todayDecoration: BoxDecoration(
+                    color: Colors.transparent,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.black),
+                  ),
+                  selectedDecoration: BoxDecoration(
+                    color: Colors.blue.shade200,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () async {
-                    final user = _auth.currentUser;
-                    if (user != null) {
-                    final reminder = {
-                      "title": _titleController.text,
-                      "desc": _descController.text,
-                      "time": _selectedTime.format(context),
-                      "color": selectedColor.hashCode,
-                      "date": (_selectedDay ?? _focusedDay).toIso8601String().substring(0, 10),
-                    };
-                  
-                    final userDoc = _firestore.collection("users").doc(user.uid);
-                    await userDoc.update({
-                      "reminders": FieldValue.arrayUnion([reminder])
-                    }).catchError((_) async {
-                      await userDoc.set({"reminders": [reminder]});
-                    });
-                      }
-                      Navigator.of(context).pop();
-
-                  },
-                  child: Text("Save"),
-                )
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-   void _showEditReminderDialog(Map<String, dynamic> oldReminder) {
-    _titleController.text = oldReminder['title'];
-    _descController.text = oldReminder['desc'];
-    _selectedTime = TimeOfDay(
-    hour: int.parse(oldReminder['time'].split(":")[0]),
-    minute: int.parse(oldReminder['time'].split(":")[1].split(" ")[0])
-);
-
-    Color selectedColor = Color(oldReminder['color']);
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(builder: (context, setState) {
-          return AlertDialog(
-            title: Text("Edit Reminder"),
-            content: SingleChildScrollView(
-
-              child: Column(
-                children: [
-                  TextField(controller: _titleController, decoration: InputDecoration(labelText: "Title")),
-                  TextField(controller: _descController, decoration: InputDecoration(labelText: "Description")),
-                  ElevatedButton(
-                    onPressed: () async {
-                      TimeOfDay? picked = await showTimePicker(
-                        context: context,
-                        initialTime: _selectedTime,
-                      );
-                      if (picked != null) {
-                        setState(() {
-                          _selectedTime = picked;
-                        });
-                      }
-                    },
-                    child: Text("Pick Time: ${_selectedTime.format(context)}"),
-                  ),
-                  Wrap(
-                    spacing: 10,
-                    children: [
-                      _buildColorCircle(Colors.green.shade100, selectedColor, (color) => setState(() => selectedColor = color)),
-                      _buildColorCircle(Colors.blue.shade100, selectedColor, (color) => setState(() => selectedColor = color)),
-                      _buildColorCircle(Colors.red.shade100, selectedColor, (color) => setState(() => selectedColor = color)),
-                      _buildColorCircle(Colors.yellow.shade100, selectedColor, (color) => setState(() => selectedColor = color)),
-                      _buildColorCircle(Colors.purple.shade100, selectedColor, (color) => setState(() => selectedColor = color)),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                 final updatedReminder = {
-                "title": _titleController.text,
-                "desc": _descController.text,
-                "time": _selectedTime.format(context),
-                "color": selectedColor.hashCode,
-                "date": (_selectedDay ?? _focusedDay).toIso8601String().substring(0, 10),
-              };
-
-              final user = _auth.currentUser;
-              if (user != null) {
-                final userDoc = _firestore.collection("users").doc(user.uid);
-
-                await userDoc.update({
-                  "reminders": FieldValue.arrayRemove([oldReminder])
-                });
-
-                await userDoc.update({
-                  "reminders": FieldValue.arrayUnion([updatedReminder])
-                });              
+              const SizedBox(height: 16),
+              StreamBuilder<DocumentSnapshot>(
+                stream: _firestore.collection('users').doc(_auth.currentUser!.uid).snapshots(),
+                builder: (context, snapshot) {
+                  List<Map<String, dynamic>> reminders = [];
+                  if (snapshot.hasData && snapshot.data!.exists) {
+                    final data = snapshot.data!.data() as Map<String, dynamic>;
+                    final raw = data.containsKey('reminders') ? data['reminders'] as List<dynamic> : <dynamic>[];
+                    reminders = raw
+                        .where((r) => (r as Map<String, dynamic>)['date'] == selectedKey)
+                        .cast<Map<String, dynamic>>()
+                        .toList();
                   }
 
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-
-
+                  return Container(
+                    decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: BorderRadius.circular(20)),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Time: ${DateFormat('hh:mm a').format(DateTime.now())} • ${reminders.length} reminder(s)',
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 8),
+                        if (reminders.isEmpty)
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 40),
+                            child: Center(
+                              child: Text(
+                                'No reminders at the moment',
+                                style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.grey),
+                              ),
+                            ),
+                          )
+                        else
+                          ..._buildTimeline(reminders),
+                      ],
+                    ),
+                  );
                 },
-                child: Text("Save"),
-              )
+              ),
+              const SizedBox(height: 80),
             ],
-          );
-        });
-      },
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddReminderDialog,
+        child: const Icon(Icons.add),
+      ),
     );
   }
-
-
-
-Widget _buildColorCircle(Color color, Color selected, Function(Color) onTap) {
-  return GestureDetector(
-    onTap: () => onTap(color),
-    child: Container(
-      width: 30,
-      height: 30,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        border: selected == color ? Border.all(color: Colors.black, width: 2) : null,
-      ),
-    ),
-  );
-}
-
 }

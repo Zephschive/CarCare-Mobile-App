@@ -87,6 +87,7 @@ class _TowingRequestPageState extends State<TowingRequestPage> {
                     Text("Towing Request", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: isDark ? Colors.black : Colors.white)),
                     SizedBox(height: 10),
                   DropdownButtonFormField<String>(
+                  dropdownColor: isDark?Colors.white: Colors.black,
                   value: selectedLocation,
                    style: TextStyle(color: isDark ? Colors.black : Colors.white),
                   items: ghanaLocations
@@ -113,6 +114,7 @@ class _TowingRequestPageState extends State<TowingRequestPage> {
                     SizedBox(height: 10),
                     DropdownButtonFormField<String>(
                       value: selectedServiceType,
+                      dropdownColor: isDark?Colors.white: Colors.black,
                       style: TextStyle(color: isDark ? Colors.black : Colors.white),
                       items: serviceTypes
                           .map((e) => DropdownMenuItem(value: e, child: Text(e)))

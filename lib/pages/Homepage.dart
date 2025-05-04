@@ -38,10 +38,13 @@ final PageController _pageController = PageController();
   void initState() {
     super.initState();
     _currentUser = _auth.currentUser;
-  final userProvider = Provider.of<UserProvider>(context, listen: false);
+    Future.microtask(() {
+    Provider.of<UserProvider>(context, listen: false).fetchUserDetails();
+   
+  });
     _fetchCars();
     _loadUpcomingReminders();
-    userProvider.fetchUserDetails();
+  
   }
 
 void _showEditCarDialog(int index, Map<String, dynamic> car) {
@@ -267,7 +270,7 @@ Future<void> _loadUpcomingReminders() async {
   },
   itemBuilder: (context, index) {
     if (_userCars.isEmpty) {
-      return  Center(child: Text("No car found", style: TextStyle( color:isDark ? Colors.black : Colors.white ),));
+      return  Center(child: Text("No car found", style: TextStyle( color:Colors.white, fontSize: 20, fontWeight: FontWeight.w600),));
     }
 
     final car = _userCars[index];
