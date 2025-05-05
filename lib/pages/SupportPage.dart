@@ -112,7 +112,7 @@ void _launchPhoneDialer(String phoneNumber) async {
                     child: Column(
                       children: [
                         ListTile(
-                          tileColor: isDark? const Color.fromARGB(255, 248, 245, 245) : Colors.black87,
+                          tileColor: isDark? const Color.fromARGB(255, 248, 245, 245) : const Color.fromARGB(148, 0, 0, 0),
                           title: Text(faqs[index]["question"]!, style: GoogleFonts.lexendDeca(fontSize: 16 , fontWeight: FontWeight.normal,
                          color: isDark? Colors.black : Colors.white
                           )),
@@ -123,7 +123,7 @@ void _launchPhoneDialer(String phoneNumber) async {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
                             decoration: BoxDecoration(
-                             color: isDark? const Color.fromARGB(255, 248, 245, 245)   : Colors.black87 
+                             color: isDark? const Color.fromARGB(255, 248, 245, 245)   : const Color.fromARGB(148, 0, 0, 0) 
                             ),
                             
                             child: Text(faqs[index]["answer"]!, style: GoogleFonts.karla(fontSize: 14,

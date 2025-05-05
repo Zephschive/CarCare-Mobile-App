@@ -438,7 +438,7 @@ Container(
                     child: ListView(
                       physics: const BouncingScrollPhysics(),
                       children: [
-                        TipCard("Insurance Renewal", "Your insurance will be...dvavcadcadcaccqa", isDark),
+                        TipCard("Insurance Renewal", "Your insurance will be...", isDark),
                         TipCard("Insurance Renewal Reminder", "Please don't forget to r...",isDark),
                         TipCard("Urgent Insurance Renewal", "Consider updating you...",isDark),
                         TipCard("Renewal Notification", "Protect yourself and y...",isDark),

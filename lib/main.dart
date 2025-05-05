@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 void main() async {
 WidgetsFlutterBinding.ensureInitialized();
 await Firebase.initializeApp();
-Gemini.init(apiKey: '');
+Gemini.init(apiKey: 'AIzaSyCS177rfuggxOgsrNB0yZyl6BaGyqNWVsY');
 
 runApp(
 MultiProvider(
@@ -36,7 +36,7 @@ title: 'Car Care App',
 debugShowCheckedModeBanner: false,
 theme: ThemeData.light(),
 darkTheme: ThemeData.dark(),
-themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+themeMode: themeProvider.isDarkMode ? ThemeMode.light : ThemeMode.dark,
 builder: (context, child) {
 // Wrap every page in a Stack so we can overlay the "offline" banner
 return Stack(

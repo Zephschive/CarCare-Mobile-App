@@ -21,7 +21,7 @@ class _DocumentspageState extends State<Documentspage> {
   final _firestore = FirebaseFirestore.instance;
   int selectedIndex = 4;
 
-  // the four fixed types:
+  // The four fixed document types
   final List<String> _docTypes = [
     "Driver’s License",
     "Insurance",
@@ -56,7 +56,8 @@ class _DocumentspageState extends State<Documentspage> {
               "You have already uploaded all required documents."),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context), child: const Text("OK"))
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK"))
           ],
         ),
       );
@@ -151,6 +152,7 @@ class _DocumentspageState extends State<Documentspage> {
   Widget build(BuildContext context) {
     final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
     final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: isDark ? Colors.white : Colors.black87,
@@ -159,8 +161,7 @@ class _DocumentspageState extends State<Documentspage> {
         backgroundColor: isDark ? Colors.white : Colors.black87,
         elevation: 0,
         leading: IconButton(
-          icon:
-              Icon(Icons.menu, color: isDark ? Colors.black : Colors.white),
+          icon: Icon(Icons.menu, color: isDark ? Colors.black : Colors.white),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
         title: Text(
@@ -219,7 +220,8 @@ class _DocumentspageState extends State<Documentspage> {
                       final expiry =
                           DateTime.parse(data['expiry']);
                       final borderC = _borderColor(expiry);
-                      final docType = data['docType'] as String? ?? "";
+                      final docType =
+                          data['docType'] as String? ?? "";
 
                       return GestureDetector(
                         onTap: () => Navigator.of(context).push(
@@ -233,13 +235,51 @@ class _DocumentspageState extends State<Documentspage> {
                             ),
                           ),
                         ),
+                         onLongPress: () async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Delete Document"),
+        content: const Text("Are you sure you want to delete this document?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        // Delete Firestore document
+        await docs[i].reference.delete();
+
+        // Delete local file
+        final localPath = data['localPath'];
+        final file = File(localPath);
+        if (await file.exists()) {
+          await file.delete();
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Document deleted")),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to delete: $e")),
+        );
+      }}},
                         child: Container(
                           decoration: BoxDecoration(
                             color: isDark
                                 ? Colors.grey[200]
                                 : Colors.grey[800],
-                            border: Border.all(
-                                color: borderC, width: 3),
+                            border: Border.all(color: borderC, width: 3),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           padding: const EdgeInsets.all(8),
@@ -286,15 +326,17 @@ class _DocumentspageState extends State<Documentspage> {
                               const SizedBox(height: 4),
                               Text(
                                 "Issued: ${issued.toLocal().toIso8601String().split('T').first}",
-                                style: TextStyle(color: isDark
-                                    ? Colors.black
-                                    : Colors.white),
+                                style: TextStyle(
+                                    color: isDark
+                                        ? Colors.black
+                                        : Colors.white),
                               ),
                               Text(
                                 "Expiry: ${expiry.toLocal().toIso8601String().split('T').first}",
-                                style: TextStyle(color: isDark
-                                    ? Colors.black
-                                    : Colors.white),
+                                style: TextStyle(
+                                    color: isDark
+                                        ? Colors.black
+                                        : Colors.white),
                               ),
                             ],
                           ),
@@ -313,6 +355,7 @@ class _DocumentspageState extends State<Documentspage> {
   }
 }
 
+/// Full-screen detail view with zoomable image support
 class DocumentDetailPage extends StatelessWidget {
   final String filePath;
   final String fileName;
@@ -329,20 +372,50 @@ class DocumentDetailPage extends StatelessWidget {
     required this.docType,
   });
 
+  bool get _isImage {
+    final lower = filePath.toLowerCase();
+    return lower.endsWith('.png') ||
+        lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg') ||
+        lower.endsWith('.gif') ||
+        lower.endsWith('.bmp') ||
+        lower.endsWith('.webp');
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(title: Text("$docType: $fileName")),
       body: Column(
         children: [
           Expanded(
             child: Center(
-              child: Text(
-                "File location:\n$filePath",
-                textAlign: TextAlign.center,
-              ),
+              child: _isImage
+                  ? InteractiveViewer(
+                      panEnabled: true,
+                      minScale: 0.5,
+                      maxScale: 4.0,
+                      child: Image.file(
+                        File(filePath),
+                        errorBuilder: (_, __, ___) =>
+                            const Icon(Icons.broken_image, size: 100, color: Colors.grey),
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Text(
+                        "Preview not available.\nFile location:\n$filePath",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: isDark ? Colors.white70 : Colors.black87,
+                        ),
+                      ),
+                    ),
             ),
           ),
+          const Divider(),
           ListTile(
             title: const Text("Document Type"),
             trailing: Text(docType),
