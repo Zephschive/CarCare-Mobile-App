@@ -46,16 +46,17 @@ Consumer<ConnectivityProvider>(
 builder: (context, conn, _) {
 if (!conn.isOnline) {
 return Positioned(
-top: MediaQuery.of(context).padding.top,
+top: MediaQuery.of(context).padding.top * 8,
 left: 0,
 right: 0,
 child: Container(
+alignment:Alignment.center ,
 color: Colors.red,
 padding: const EdgeInsets.symmetric(vertical: 8),
 child: const Center(
 child: Text(
 'No internet connection',
-style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold ),
 ),
 ),
 ),

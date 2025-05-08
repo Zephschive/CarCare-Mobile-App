@@ -1,9 +1,9 @@
-import 'package:carcare/common_widgets/Navigation_Menu.dart';
-import 'package:carcare/theme_provider/themeprovider.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-
+// Import statements for required packages and modules
+import 'package:carcare/common_widgets/Navigation_Menu.dart'; // Custom side menu drawer widget
+import 'package:carcare/theme_provider/themeprovider.dart';   // Theme provider for light/dark mode
+import 'package:flutter/material.dart';                       // Flutter UI toolkit
+import 'package:google_fonts/google_fonts.dart';             // Google Fonts for custom typography
+import 'package:provider/provider.dart';                      // Provider for state management
 class MaintenanceTipsPage extends StatefulWidget {
   @override
   State<MaintenanceTipsPage> createState() => _MaintenanceTipsPageState();
@@ -151,7 +151,7 @@ class _MaintenanceTipsPageState extends State<MaintenanceTipsPage> {
   {"title": "Clear Codes After Repair", "description": "Verify the issue is resolved.", "category": "Diagnostics"},
   {"title": "Consult a Mechanic", "description": "For codes you can’t fix yourself.", "category": "Diagnostics"},
 ];
-
+   /// Computes the list of tips filtered by search text and selected category
   List<Map<String, String>> get filteredTips {
     final search = _searchController.text.toLowerCase();
     return allTips.where((tip) {
@@ -263,6 +263,7 @@ class _MaintenanceTipsPageState extends State<MaintenanceTipsPage> {
                   ),
                 ),
                 const SizedBox(width: 10),
+                 // Category filter popup menu
                 PopupMenuButton<String>(
                   icon: Icon(Icons.filter_list, color: isDark ? Colors.black : Colors.white),
                   color: isDark ? Colors.white : Colors.black87,
@@ -300,7 +301,7 @@ class _MaintenanceTipsPageState extends State<MaintenanceTipsPage> {
 
             const SizedBox(height: 16),
 
-            // Tips list
+             // List of filtered tips
             Expanded(
               child: ListView.builder(
                 itemCount: filteredTips.length,

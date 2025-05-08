@@ -21,6 +21,17 @@ class _DocumentspageState extends State<Documentspage> {
   final _firestore = FirebaseFirestore.instance;
   int selectedIndex = 4;
 
+  bool _isImageFile(String path) {
+  final lower = path.toLowerCase();
+  return lower.endsWith('.png') ||
+      lower.endsWith('.jpg') ||
+      lower.endsWith('.jpeg') ||
+      lower.endsWith('.gif') ||
+      lower.endsWith('.bmp') ||
+      lower.endsWith('.webp');
+}
+
+
   // The four fixed document types
   final List<String> _docTypes = [
     "Driver’s License",
@@ -303,15 +314,27 @@ class _DocumentspageState extends State<Documentspage> {
                                 ),
                               ),
                               const SizedBox(height: 6),
-                              Expanded(
-                                child: Center(
-                                  child: Icon(
-                                    Icons.insert_drive_file,
-                                    size: 60,
-                                    color: borderC,
-                                  ),
-                                ),
-                              ),
+                             Expanded(
+  child: Center(
+    child: _isImageFile(data['localPath'])
+        ? ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.file(
+              File(data['localPath']),
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+              errorBuilder: (_, __, ___) => Icon(Icons.broken_image, color: borderC, size: 60),
+            ),
+          )
+        : Icon(
+            Icons.insert_drive_file,
+            size: 60,
+            color: borderC,
+          ),
+  ),
+),
+
                               Text(
                                 data['fileName'],
                                 maxLines: 1,
