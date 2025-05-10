@@ -147,7 +147,7 @@ void _launchPhoneDialer(String phoneNumber) async {
     return GestureDetector(
       onTap: () {
        if (title == "Call Us") {
-    _launchPhoneDialer("+233501234567"); // Replace with your actual support number
+    _launchPhoneDialer("+233501234567"); 
   } else {
     Navigator.push(context, MaterialPageRoute(builder: (context) =>ChatPage() ));
   }
