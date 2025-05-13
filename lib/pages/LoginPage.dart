@@ -1,4 +1,5 @@
 import 'package:carcare/common_widgets/RectangularbuttonColor.dart';
+import 'package:carcare/pages/ForgottenPasswordPage.dart';
 import 'package:carcare/pages/Homepage.dart';
 import 'package:carcare/pages/Navigator_Page.dart';
 import 'package:carcare/pages/SignupPage.dart';
@@ -118,7 +119,19 @@ class _LoginPageState extends State<LoginPage> {
                   },
                 ),
 
-                
+                Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                 onPressed: () {
+                    Navigator.push(
+                     context,
+        MaterialPageRoute(builder: (_) => ForgotPasswordPage()),
+      );
+    },
+    child: const Text("Forgot Password?", style: TextStyle(color: Colors.blue)),
+  ),
+),
+
 
                 const SizedBox(height: 60),
 

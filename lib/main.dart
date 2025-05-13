@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 void main() async {
 WidgetsFlutterBinding.ensureInitialized();
 await Firebase.initializeApp();
-Gemini.init(apiKey: '');
+Gemini.init(apiKey: 'AIzaSyCS177rfuggxOgsrNB0yZyl6BaGyqNWVsY');
 
 runApp(
 MultiProvider(
